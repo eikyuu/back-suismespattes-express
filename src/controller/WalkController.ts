@@ -44,7 +44,9 @@ export class WalkController {
 
     async all(request: Request, response: Response, next: NextFunction): Promise<Walk[]> {
         try {
-            const walks: Walk[] = await this.walkRepository.find();
+            const walks: Walk[] = await this.walkRepository.find({
+                relations: ['images'],
+            });
             return walks;
         } catch (error) {
             throw new Error('Error while fetching walks');

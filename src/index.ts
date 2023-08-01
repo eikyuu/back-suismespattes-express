@@ -5,14 +5,21 @@ import { AppDataSource } from "./data-source"
 import { Routes } from "./routes"
 import { ExceptionsHandler } from './middlewares/exceptions.handler'
 import { UnknownRoutesHandler } from './middlewares/unknownRoutes.handler'
-
+import 'dotenv/config'
 import { env } from 'process'
+import cors = require('cors')
 
 AppDataSource.initialize().then(async () => {
 
     // create express app
     const app = express()
     app.use(bodyParser.json());
+
+    /**
+     * On dit à Express que l'on souhaite autoriser tous les noms de domaines
+     * à faire des requêtes sur notre API.
+     */
+        app.use(cors())
 
     // register express routes from defined application routes
     Routes.forEach(route => {
@@ -34,11 +41,7 @@ AppDataSource.initialize().then(async () => {
      */
     app.use(express.json());
 
-    /**
-     * On dit à Express que l'on souhaite autoriser tous les noms de domaines
-     * à faire des requêtes sur notre API.
-     */
-    // app.use(cors())
+
 
     /**
      * Pour toutes les autres routes non définies, on retourne une erreur
