@@ -43,7 +43,7 @@ export const Routes = [{
 },
 {
     method: "delete",
-    route: "/walks/:id",
+    route: "/walks/:slug",
     controller: WalkController,
     action: "remove"
 },
@@ -55,13 +55,13 @@ export const Routes = [{
 },
 {
     method: "delete",
-    route: "/walks/images/:id",
+    route: "/walks/images/:filename",
     controller: WalkController,
     action: "removeImage"
 },
 {
     method: "get",
-    route: "/walks/images/:slug",
+    route: "/walks/images/:filename",
     controller: WalkController,
     action: "getImage"
 },

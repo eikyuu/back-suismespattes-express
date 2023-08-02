@@ -1,4 +1,3 @@
-import { AppDataSource } from '../data-source';
 import { NextFunction, Request, Response } from "express"
 import { Walk } from '../entity/Walk';
 import { formatSlug } from '../utils/Utils';
@@ -8,6 +7,8 @@ import multer = require('multer');
 import { WalkImage } from '../entity/WalkImage';
 import { promisify } from 'util';
 import path = require('path');
+import { WalkRepository } from '../repository/walk.repository';
+import { WalkImageRepository } from '../repository/walkImage.repository';
 const fs = require('fs')
 
 export class WalkController {
@@ -15,25 +16,16 @@ export class WalkController {
         'https://maps.googleapis.com/maps/api/geocode/json';
     private static LANGUAGE: string = 'fr';
     private static UPLOAD_DIR: string = 'src/../uploads/walks/'
-    private API_KEY: string = 'AIzaSyDMDWV5GAYR9e_deQcW6YtWGdfSHNi3r58';
+    private GOOGLE_API_KEY: string = process.env.GOOGLE_API_KEY;
 
-    // constructor(apiKey: string) {
-    //     this.API_KEY = apiKey;
-    // }
-
-    //    private validateApiKey(apiKey: string) {
-    //     // Add validation logic here to ensure the API key is valid and authorized
-    //     // Example: check against a list of allowed API keys or verify with an authentication service
-    //     return true; // Replace with actual validation logic
-    //   }
-
-    private walkRepository = AppDataSource.getRepository(Walk);
+    private walkRepository = WalkRepository;
+    private walkImageRepository = WalkImageRepository
 
     private async geocodeAddress(address: string): Promise<{
         lat: number;
         lng: number;
     }> {
-        const geocodingUrl: string = `${WalkController.GEOCODING_URI}?address=${encodeURIComponent(address)}&key=${this.API_KEY}&language=${WalkController.LANGUAGE}`;
+        const geocodingUrl: string = `${WalkController.GEOCODING_URI}?address=${encodeURIComponent(address)}&key=${this.GOOGLE_API_KEY}&language=${WalkController.LANGUAGE}`;
         try {
             const response = await axios.get(geocodingUrl);
             return response.data.results[0].geometry.location;
@@ -44,9 +36,7 @@ export class WalkController {
 
     async all(request: Request, response: Response, next: NextFunction): Promise<Walk[]> {
         try {
-            const walks: Walk[] = await this.walkRepository.find({
-                relations: ['images'],
-            });
+            const walks: Walk[] = await this.walkRepository.findAllWalks();
             return walks;
         } catch (error) {
             throw new Error('Error while fetching walks');
@@ -55,9 +45,9 @@ export class WalkController {
 
     async one(request: Request, response: Response, next: NextFunction): Promise<Walk> {
 
-        const slug = request.params.slug;
+        const slug: string = request.params.slug;
 
-        const walk = this.findWalkBySlug(slug);
+        const walk: Walk = await this.walkRepository.findWalkBySlug(slug);
 
         if (!walk) {
             throw new NotFoundException('Walk not found');
@@ -121,14 +111,12 @@ export class WalkController {
     }
 
     async remove(request: Request, response: Response, next: NextFunction): Promise<string> {
-        const id = parseInt(request.params.id)
+        const slug = request.params.slug;
 
-        let walkToRemove: Walk = await this.walkRepository.findOne({
-            where: { id },
-        });
+        let walkToRemove: Walk = await this.walkRepository.findWalkBySlug(slug);
 
-        if (!Number.isInteger(id)) {
-            throw new BadRequestException('Invalid id');
+        if (!walkToRemove) {
+            throw new NotFoundException('Walk not found');
         }
 
         await this.walkRepository.remove(walkToRemove);
@@ -136,14 +124,6 @@ export class WalkController {
         return "walk has been removed";
     }
 
-    findWalkBySlug = (slug: string) => {
-        return this.walkRepository.findOne({
-            where: { slug },
-            relations: ['images'],
-        });
-    }
-
-    // upload image for a walk by s1ug
     async uploadImage(request: Request, response: Response, next: NextFunction): Promise<string> {
 
         const unlinkAsync = promisify(fs.unlink)
@@ -162,14 +142,9 @@ export class WalkController {
 
         const upload = multer({ storage: storage }).single('image')
 
-        const saveWalkImage = (walkImage: WalkImage) => {
-
-            return AppDataSource.getRepository(WalkImage).save(walkImage);
-        }
-
         upload(request, response, async function (err) {
 
-            const walk = await this.findWalkBySlug(request.body.slug);
+            const walk: Walk = await this.findWalkBySlug(request.body.slug);
 
             if (err) {
                 throw new Error('Error while uploading image');
@@ -189,7 +164,7 @@ export class WalkController {
                 walk: walk,
             });
 
-            await saveWalkImage(walkImage);
+            await this.walkImageRepository.saveWalkImage(walkImage);
 
             return "image has been uploaded";
         });
@@ -199,41 +174,32 @@ export class WalkController {
 
     async removeImage(request: Request, response: Response, next: NextFunction): Promise<string> {
 
-        const unlinkAsync = promisify(fs.unlink)
+        const unlinkAsync = promisify(fs.unlink);
 
-        const id = parseInt(request.params.id)
+        const filename = request.params.filename;
 
-        let walkImageToRemove: WalkImage = await AppDataSource.getRepository(WalkImage).findOne({
-            where: { id },
-        });
+        const walkImageToRemove: WalkImage = await this.walkImageRepository.findWalkImageByFilename(filename);
 
-        if (!Number.isInteger(id)) {
-            throw new BadRequestException('Invalid id');
+        if (!walkImageToRemove) {
+            throw new NotFoundException('Image not found');
         }
 
         await unlinkAsync(WalkController.UPLOAD_DIR + walkImageToRemove.name)
 
-        await AppDataSource.getRepository(WalkImage).remove(walkImageToRemove);
+        await this.walkImageRepository.remove(walkImageToRemove);
 
         return "image has been removed";
     }
 
     async getImage(request: Request, response: Response, next: NextFunction) {
 
-        const slug = request.params.slug
-
-        const walkImage = await AppDataSource.getRepository(WalkImage).findOne({
-            where: { name: slug },
-        })
-        console.log('walkimage', walkImage);
+        const walkImage = await this.walkImageRepository.findWalkImageByFilename(request.params.filename);
 
         if (!walkImage) {
             throw new NotFoundException('Image not found');
         }
 
-        const file = path.resolve(WalkController.UPLOAD_DIR + walkImage.name)
-
-        return response.sendFile(file)
+        return response.sendFile(path.resolve(WalkController.UPLOAD_DIR + walkImage.name))
 
     }
 
