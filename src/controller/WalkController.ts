@@ -7,8 +7,8 @@ import { BadRequestException, NotFoundException } from '../utils/Exceptions';
 import multer = require('multer');
 import { WalkImage } from '../entity/WalkImage';
 import { promisify } from 'util';
+import path = require('path');
 const fs = require('fs')
-
 
 export class WalkController {
     private static GEOCODING_URI: string =
@@ -55,15 +55,9 @@ export class WalkController {
 
     async one(request: Request, response: Response, next: NextFunction): Promise<Walk> {
 
-        const id = parseInt(request.params.id)
+        const slug = request.params.slug;
 
-        const walk = await this.walkRepository.findOne({
-            where: { id },
-        });
-
-        if (!Number.isInteger(id)) {
-            throw new BadRequestException('Invalid id');
-        }
+        const walk = this.findWalkBySlug(slug);
 
         if (!walk) {
             throw new NotFoundException('Walk not found');
@@ -142,6 +136,13 @@ export class WalkController {
         return "walk has been removed";
     }
 
+    findWalkBySlug = (slug: string) => {
+        return this.walkRepository.findOne({
+            where: { slug },
+            relations: ['images'],
+        });
+    }
+
     // upload image for a walk by s1ug
     async uploadImage(request: Request, response: Response, next: NextFunction): Promise<string> {
 
@@ -161,12 +162,6 @@ export class WalkController {
 
         const upload = multer({ storage: storage }).single('image')
 
-        const findWalkBySlug = (slug: string) => {
-            return this.walkRepository.findOne({
-                where: { slug },
-            });
-        }
-
         const saveWalkImage = (walkImage: WalkImage) => {
 
             return AppDataSource.getRepository(WalkImage).save(walkImage);
@@ -174,7 +169,7 @@ export class WalkController {
 
         upload(request, response, async function (err) {
 
-            const walk = await findWalkBySlug(request.body.slug);
+            const walk = await this.findWalkBySlug(request.body.slug);
 
             if (err) {
                 throw new Error('Error while uploading image');
@@ -201,4 +196,45 @@ export class WalkController {
 
         return "image has been uploaded";
     }
+
+    async removeImage(request: Request, response: Response, next: NextFunction): Promise<string> {
+
+        const unlinkAsync = promisify(fs.unlink)
+
+        const id = parseInt(request.params.id)
+
+        let walkImageToRemove: WalkImage = await AppDataSource.getRepository(WalkImage).findOne({
+            where: { id },
+        });
+
+        if (!Number.isInteger(id)) {
+            throw new BadRequestException('Invalid id');
+        }
+
+        await unlinkAsync(WalkController.UPLOAD_DIR + walkImageToRemove.name)
+
+        await AppDataSource.getRepository(WalkImage).remove(walkImageToRemove);
+
+        return "image has been removed";
+    }
+
+    async getImage(request: Request, response: Response, next: NextFunction) {
+
+        const slug = request.params.slug
+
+        const walkImage = await AppDataSource.getRepository(WalkImage).findOne({
+            where: { name: slug },
+        })
+        console.log('walkimage', walkImage);
+
+        if (!walkImage) {
+            throw new NotFoundException('Image not found');
+        }
+
+        const file = path.resolve(WalkController.UPLOAD_DIR + walkImage.name)
+
+        return response.sendFile(file)
+
+    }
+
 }
