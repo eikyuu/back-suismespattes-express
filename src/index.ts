@@ -1,4 +1,4 @@
-import * as express from "express"
+const express = require("express");
 import * as bodyParser from "body-parser"
 import { Request, Response } from "express"
 import { AppDataSource } from "./data-source"
