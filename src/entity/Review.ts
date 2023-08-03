@@ -3,10 +3,10 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 @Entity()
 export class Review {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid", { name  : "id"})
     id: number
 
-    @Column()
+    @Column("string", { name : "name", length: 255, nullable: false, default: null })
     content: string
     
     @Column({ name : "created_at"})

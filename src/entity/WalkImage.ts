@@ -4,10 +4,10 @@ import { Walk } from './Walk'
 @Entity()
 export class WalkImage {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid", { name : "id" } )
     id: number
 
-    @Column()
+    @Column("string", { name : "name", length: 255, nullable: false, default: null } )
     name: string
 
     @ManyToOne(() => Walk, walk => walk.images)
