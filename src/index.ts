@@ -41,6 +41,9 @@ AppDataSource.initialize().then(async () => {
      */
     app.use(express.json());
 
+    app.get('/hello', (req, res) => {
+        res.status(200).send({ message: 'hello world' });
+      });
 
 
     /**

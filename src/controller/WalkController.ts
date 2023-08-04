@@ -57,6 +57,8 @@ export class WalkController {
     }
 
     async save(request: Request, response: Response, next: NextFunction): Promise<Walk> {
+
+        console.log('tyoto');
         const {
             name,
             description,
