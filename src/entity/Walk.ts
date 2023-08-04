@@ -7,25 +7,25 @@ export class Walk {
     @PrimaryGeneratedColumn("uuid" , { name : "id" })
     id: number
 
-    @Column("string", { name : "name", unique: true, length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "name", unique: true, length: 255, nullable: false, default: null })
     name: string
 
-    @Column("string", { name : "slug", unique: true, length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "slug", unique: true, length: 255, nullable: false, default: null })
     slug: string
 
     @Column("text", { name : "description", nullable: false, default: null })
     description: string
 
-    @Column("string", { name : "city", length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "city", length: 255, nullable: false, default: null })
     city: string
 
-    @Column("string", { name : "postal_code", length: 5, nullable: false, default: null })
+    @Column("varchar", { name : "postal_code", length: 5, nullable: false, default: null })
     postalCode: string
 
-    @Column("string", { name : "street", length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "street", length: 255, nullable: false, default: null })
     street: string
 
-    @Column("string", { name : "country", length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "country", length: 255, nullable: false, default: null })
     country: string
 
     @Column("float", { name : "latitude", nullable: true })

@@ -7,7 +7,7 @@ export class WalkImage {
     @PrimaryGeneratedColumn("uuid", { name : "id" } )
     id: number
 
-    @Column("string", { name : "name", length: 255, nullable: false, default: null } )
+    @Column("varchar", { name : "name", length: 255, nullable: false, default: null } )
     name: string
 
     @ManyToOne(() => Walk, walk => walk.images)
