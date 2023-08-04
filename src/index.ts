@@ -77,5 +77,6 @@ AppDataSource.initialize().then(async () => {
     // )
 
     console.log(`Express application is up and running on port ${env.PORT}`)
+    console.log(env.DB_HOST)
 
 }).catch(error => console.log(error))
