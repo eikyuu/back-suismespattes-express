@@ -148,8 +148,8 @@ export class WalkController {
         const upload = multer({ storage: storage }).single('image')
 
         try {
-            this.newMethod(upload, request, response, unlinkAsync, filename);
-            return "image has been uploaded";
+            await this.newMethod(upload, request, response, unlinkAsync, filename);
+            return filename;
         } catch (error) {
             throw new Error('Error while uploading image');
         }
@@ -180,7 +180,7 @@ export class WalkController {
 
             await WalkImageRepository.saveWalkImage(walkImage);
 
-            return "image has been uploaded";
+            return request.file.filename;
         });
     }
 
