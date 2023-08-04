@@ -178,7 +178,11 @@ export class WalkController {
                 walk: walk,
             });
 
-            await WalkImageRepository.saveWalkImage(walkImage);
+            try {
+                await WalkImageRepository.saveWalkImage(walkImage);
+            } catch (error) { 
+                throw new Error("Failed to save walk");
+            }
 
             return request.file.filename;
         });
