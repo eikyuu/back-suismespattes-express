@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 
 @Entity()
 export class Review {
@@ -9,10 +9,10 @@ export class Review {
     @Column("varchar", { name : "name", length: 255, nullable: false, default: null })
     content: string
     
-    @Column({ name : "created_at"})
+    @CreateDateColumn({ name : "created_at"})
     createdAt: Date
 
-    @Column({ name : "updated_at"})
+    @UpdateDateColumn({ name : "updated_at"})
     updatedAt: Date
 
 }
