@@ -39,6 +39,7 @@ export class WalkController {
             const walks: Walk[] = await this.walkRepository.findAllWalks();
             return walks;
         } catch (error) {
+            console.error(error);
             throw new Error('Error while fetching walks');
         }
     }
@@ -58,7 +59,6 @@ export class WalkController {
 
     async save(request: Request, response: Response, next: NextFunction): Promise<Walk> {
 
-        console.log('tyoto');
         const {
             name,
             description,
