@@ -217,7 +217,6 @@ export class WalkController {
         }
 
         return response.sendFile(path.resolve(WalkController.UPLOAD_DIR + walkImage.name))
-
     }
 
 }
