@@ -108,6 +108,7 @@ export class WalkController {
             await this.walkRepository.save(walk);
             return walk;
         } catch (error) {
+            console.error(error);
             throw new Error('Error while saving walk');
         }
     }
