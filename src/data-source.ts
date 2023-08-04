@@ -6,8 +6,8 @@ import e = require('cors')
 
 export const AppDataSource = new DataSource({
     type: "mysql",
-    host: env.DB_HOST || "localhost",
-    port: 3306,
+    host: env.DB_HOST,
+    port: parseInt(env.DB_PORT),
     username: env.DB_USER,
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
