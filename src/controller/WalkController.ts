@@ -150,8 +150,9 @@ export class WalkController {
 
         try {
             await this.newMethod(upload, request, response, unlinkAsync, filename);
+            return "image has been uploaded";
         } catch (error) {
-            return error;
+            return error.message;        
         }
 
     }
