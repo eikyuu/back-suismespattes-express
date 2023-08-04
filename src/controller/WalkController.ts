@@ -148,44 +148,39 @@ export class WalkController {
 
         const upload = multer({ storage: storage }).single('image')
 
-        try {
-            this.newMethod(upload, request, response, unlinkAsync, filename);
-        } catch (error) {
-            return error;
-        }
+            upload(request, response, async function (err) {
 
-    }
+                const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
 
-    private newMethod(upload, request, response: Response<any, Record<string, any>>, unlinkAsync: Function, filename: string) {
-        upload(request, response, async function (err) {
-
-            const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
-            if (err) {
-                console.error(err);
-                return error;
-            }
-
-            if (!walk) {
-                await unlinkAsync(WalkController.UPLOAD_DIR + filename);
-                throw new NotFoundException('Walk not found');
-            }
-
-            if (!request.file) {
-                throw new BadRequestException('Image not found');
-            }
-
-            const walkImage = Object.assign(new WalkImage(), {
-                name: request.file.filename,
-                walk: walk,
+                if (err) {
+                    console.log(err)
+                    return next(err);
+                  }
+    
+                if (!walk) {
+                    await unlinkAsync(WalkController.UPLOAD_DIR + filename);
+                    return next(new NotFoundException('Walk not found'));
+                }
+    
+                if (!request.file) {
+                    return next(new BadRequestException('No file uploaded'));
+                }
+    
+                const walkImage = Object.assign(new WalkImage(), {
+                    name: request.file.filename,
+                    walk: walk,
+                });
+    
+                try {
+                    await WalkImageRepository.saveWalkImage(walkImage);
+                    return response.send('Image uploaded successfully');
+                } catch (error) { 
+                    return next(error);
+                }
+    
             });
+ 
 
-            try {
-                await WalkImageRepository.saveWalkImage(walkImage);
-            } catch (error) { 
-                throw new Error("Failed to save walk");
-            }
-
-        });
     }
 
     async removeImage(request: Request, response: Response, next: NextFunction): Promise<string> {
