@@ -154,8 +154,6 @@ export class WalkController {
             return error;
         }
 
-        return "image has been uploaded";
-
     }
 
     private newMethod(upload, request, response: Response<any, Record<string, any>>, unlinkAsync: Function, filename: string) {
