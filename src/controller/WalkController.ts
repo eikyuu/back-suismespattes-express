@@ -129,7 +129,7 @@ export class WalkController {
         return "walk has been removed";
     }
 
-    async uploadImage(request: Request, response: Response, next: NextFunction): Promise<string> {
+    async uploadImage(request: Request, response: Response, next: NextFunction) {
 
         const unlinkAsync = promisify(fs.unlink)
 
@@ -147,17 +147,25 @@ export class WalkController {
 
         const upload = multer({ storage: storage }).single('image')
 
+        try {
+            this.newMethod(upload, request, response, unlinkAsync, filename);
+            return "image has been uploaded";
+        } catch (error) {
+            throw new Error('Error while uploading image');
+        }
+
+    }
+
+    private newMethod(upload, request, response: Response<any, Record<string, any>>, unlinkAsync: Function, filename: string) {
         upload(request, response, async function (err) {
 
-            console.log(request.body.slug)
             const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
-            console.log(walk)
             if (err) {
                 throw new Error('Error while uploading image');
             }
 
             if (!walk) {
-                await unlinkAsync(WalkController.UPLOAD_DIR + filename)
+                await unlinkAsync(WalkController.UPLOAD_DIR + filename);
                 throw new NotFoundException('Walk not found');
             }
 
@@ -174,8 +182,6 @@ export class WalkController {
 
             return "image has been uploaded";
         });
-
-        return "image has been uploaded";
     }
 
     async removeImage(request: Request, response: Response, next: NextFunction): Promise<string> {
