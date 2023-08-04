@@ -46,7 +46,7 @@ export class Walk {
     @Column("boolean", { name : "cyanobacteria_alert", default: false })
     cyanobacteriaAlert: boolean
 
-    @Column("int", { name : "note", nullable: true })
+    @Column("int", { name : "note", nullable: false})
     note: number
     
     @CreateDateColumn({ name : "created_at"})

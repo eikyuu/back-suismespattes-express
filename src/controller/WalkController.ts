@@ -30,7 +30,7 @@ export class WalkController {
             const response = await axios.get(geocodingUrl);
             return response.data.results[0].geometry.location;
         } catch (error) {
-            throw new Error('Geocoding error');
+            return error.message;
         }
     }
 
@@ -39,8 +39,7 @@ export class WalkController {
             const walks: Walk[] = await this.walkRepository.findAllWalks();
             return walks;
         } catch (error) {
-            console.error(error);
-            throw new Error('Error while fetching walks');
+            return error.message;
         }
     }
 
@@ -59,6 +58,8 @@ export class WalkController {
 
     async save(request: Request, response: Response, next: NextFunction): Promise<Walk> {
 
+        //ajouter erreur si manque un champ
+        // ajouter enum pour les champs obligatoryLe
         const {
             name,
             description,
@@ -83,8 +84,7 @@ export class WalkController {
             latitude = geocodeResult.lat;
             longitude = geocodeResult.lng;
         } catch (error) {
-            console.log(error);
-            return error;
+            return error.message;
         }
 
         const walk = Object.assign(new Walk(), {
@@ -105,11 +105,13 @@ export class WalkController {
         });
 
         try {
+            if (!walk || typeof walk !== "object") {
+                throw new Error("Invalid walk object");
+            }
             await this.walkRepository.save(walk);
             return walk;
         } catch (error) {
-            console.error(error);
-            throw new Error('Error while saving walk');
+            return error.message;
         }
     }
 
