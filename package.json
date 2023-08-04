@@ -28,6 +28,6 @@
       "typeorm": "typeorm-ts-node-commonjs",
       "dev": "nodemon --watch src -e js,ts,json --exec \"ts-node src/index.ts\"",
       "build": "tsup src/index.ts --format cjs --clean",
-      "start": "node index.js"
+      "start": "node dist/index.js"
    }
 }
