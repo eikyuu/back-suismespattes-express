@@ -149,8 +149,9 @@ export class WalkController {
 
         upload(request, response, async function (err) {
 
-            const walk: Walk = await this.findWalkBySlug(request.body.slug);
-
+            console.log(request.body.slug)
+            const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
+            console.log(walk)
             if (err) {
                 throw new Error('Error while uploading image');
             }
@@ -169,7 +170,7 @@ export class WalkController {
                 walk: walk,
             });
 
-            await this.walkImageRepository.saveWalkImage(walkImage);
+            await WalkImageRepository.saveWalkImage(walkImage);
 
             return "image has been uploaded";
         });
