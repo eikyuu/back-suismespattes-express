@@ -9,6 +9,7 @@ import { promisify } from 'util';
 import path = require('path');
 import { WalkRepository } from '../repository/walk.repository';
 import { WalkImageRepository } from '../repository/walkImage.repository';
+import { error } from 'console';
 const fs = require('fs')
 
 export class WalkController {
@@ -149,9 +150,8 @@ export class WalkController {
 
         try {
             await this.newMethod(upload, request, response, unlinkAsync, filename);
-            return filename;
         } catch (error) {
-            throw new Error('Error while uploading image');
+            return error;
         }
 
     }
@@ -161,7 +161,8 @@ export class WalkController {
 
             const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
             if (err) {
-                throw new Error('Error while uploading image');
+                console.error(err);
+                return error;
             }
 
             if (!walk) {
@@ -183,7 +184,7 @@ export class WalkController {
             } catch (error) { 
                 throw new Error("Failed to save walk");
             }
-            return request.file.filename;
+
         });
     }
 
