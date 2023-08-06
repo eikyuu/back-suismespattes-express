@@ -9,12 +9,10 @@ import { promisify } from 'util';
 import path = require('path');
 import { WalkRepository } from '../repository/walk.repository';
 import { WalkImageRepository } from '../repository/walkImage.repository';
-import { error } from 'console';
 const fs = require('fs')
 
 export class WalkController {
-    private static GEOCODING_URI: string =
-        'https://maps.googleapis.com/maps/api/geocode/json';
+    private static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
     private static LANGUAGE: string = 'fr';
     private static UPLOAD_DIR: string = 'src/../uploads/walks/'
     private GOOGLE_API_KEY: string = process.env.GOOGLE_API_KEY;
@@ -40,27 +38,29 @@ export class WalkController {
             const walks: Walk[] = await this.walkRepository.findAllWalks();
             return walks;
         } catch (error) {
-            return error.message;
+            next(error);
         }
     }
 
-    async one(request: Request, response: Response, next: NextFunction): Promise<Walk> {
-
-        const slug: string = request.params.slug;
-
-        const walk: Walk = await this.walkRepository.findWalkBySlug(slug);
-
-        if (!walk) {
-            throw new NotFoundException('Walk not found');
+    async one(request: Request, response: Response, next: NextFunction): Promise<void> {
+        try {
+            const slug: string = request.params.slug;
+            const walk: Walk = await this.walkRepository.findWalkBySlug(slug);
+    
+            if (!walk) {
+                throw new NotFoundException('Walk not found');
+            }
+    
+            response.json(walk);
+        } catch (error) {
+            next(error);
         }
-
-        return walk
     }
 
     async save(request: Request, response: Response, next: NextFunction): Promise<Walk> {
 
         //ajouter erreur si manque un champ
-        // ajouter enum pour les champs obligatoryLe
+        // ajouter enum pour les champs obligatorye
         const {
             name,
             description,
@@ -107,7 +107,7 @@ export class WalkController {
 
         try {
             if (!walk || typeof walk !== "object") {
-                throw new Error("Invalid walk object");
+                next(new BadRequestException('Walk not found'));
             }
             await this.walkRepository.save(walk);
             return walk;
@@ -116,18 +116,29 @@ export class WalkController {
         }
     }
 
-    async remove(request: Request, response: Response, next: NextFunction): Promise<string> {
-        const slug = request.params.slug;
+    async remove(request: Request, response: Response, next: NextFunction): Promise<void> {
+        const slug: string = request.params.slug;
 
-        let walkToRemove: Walk = await this.walkRepository.findWalkBySlug(slug);
+        const walkToRemove: Walk = await this.walkRepository.findWalkBySlug(slug);
+
+        //delete les images associées à la balade
+
+        const filenames = walkToRemove.images.map(image => image.name);
+
+        await Promise.all(filenames.map(async (filename) => {
+            await this.removeImage(filename);
+        }));
 
         if (!walkToRemove) {
-            throw new NotFoundException('Walk not found');
+            next(new NotFoundException('Walk not found'));
         }
 
-        await this.walkRepository.remove(walkToRemove);
-
-        return "walk has been removed";
+        try {
+            await this.walkRepository.remove(walkToRemove);
+            response.json("Walk has been removed");
+        } catch (error) {
+            next(error);
+        }
     }
 
     async uploadImage(request: Request, response: Response, next: NextFunction) {
@@ -148,56 +159,46 @@ export class WalkController {
 
         const upload = multer({ storage: storage }).single('image')
 
-            upload(request, response, async function (err) {
+        upload(request, response, async function (err) {
 
-                const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
+            const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
 
-                if (err) {
-                    console.log(err)
-                    return next(err);
-                  }
-    
-                if (!walk) {
-                    await unlinkAsync(WalkController.UPLOAD_DIR + filename);
-                    return next(new NotFoundException('Walk not found'));
+            if (err) {
+                return next(err);
+            }
+
+            if (!walk) {
+                if (request.file) {
+                    await unlinkAsync(WalkController.UPLOAD_DIR + filename)
                 }
-    
-                if (!request.file) {
-                    return next(new BadRequestException('No file uploaded'));
-                }
-    
-                const walkImage = Object.assign(new WalkImage(), {
-                    name: request.file.filename,
-                    walk: walk,
-                });
-    
-                try {
-                    await WalkImageRepository.saveWalkImage(walkImage);
-                    return response.send('Image uploaded successfully');
-                } catch (error) { 
-                    return next(error);
-                }
-    
+                return next(new NotFoundException('Walk not found'));
+            }
+
+            if (!request.file) {
+                return next(new BadRequestException('No file uploaded'));
+            }
+
+            const walkImage = Object.assign(new WalkImage(), {
+                name: request.file.filename,
+                walk: walk,
             });
- 
+
+            try {
+                await WalkImageRepository.saveWalkImage(walkImage);
+                return response.send('Image uploaded successfully');
+            } catch (error) {
+                return next({ error: error.message, status: 500 });
+            }
+
+        });
 
     }
 
-    async removeImage(request: Request, response: Response, next: NextFunction): Promise<string> {
+    async removeImage(filename): Promise<string> {
 
         const unlinkAsync = promisify(fs.unlink);
 
-        const filename = request.params.filename;
-
-        const walkImageToRemove: WalkImage = await this.walkImageRepository.findWalkImageByFilename(filename);
-
-        if (!walkImageToRemove) {
-            throw new NotFoundException('Image not found');
-        }
-
-        await unlinkAsync(WalkController.UPLOAD_DIR + walkImageToRemove.name)
-
-        await this.walkImageRepository.remove(walkImageToRemove);
+        await unlinkAsync(WalkController.UPLOAD_DIR + filename)
 
         return "image has been removed";
     }

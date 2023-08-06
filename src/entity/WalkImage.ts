@@ -10,6 +10,6 @@ export class WalkImage {
     @Column("varchar", { name : "name", length: 255, nullable: false, default: null } )
     name: string
 
-    @ManyToOne(() => Walk, walk => walk.images)
+    @ManyToOne(() => Walk, walk => walk.images, { onDelete: 'CASCADE' })
     walk: Walk
 }

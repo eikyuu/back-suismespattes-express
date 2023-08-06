@@ -21,6 +21,16 @@ export const WalkRepository = AppDataSource.getRepository(Walk).extend({
             where: { id },
             relations: ['images']
         })
+    },
+
+    async saveWalk(walk: Walk): Promise<Walk> {
+        return await this.save(walk);
+    },
+
+    async removeWalkBySlug(slug: string): Promise<Walk> {
+        return await this.delete({
+           slug
+        });
     }
 
 });

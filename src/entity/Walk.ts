@@ -55,7 +55,7 @@ export class Walk {
     @UpdateDateColumn({ name : "updated_at"})
     updatedAt: Date
 
-    @OneToMany(() => WalkImage, walkImage => walkImage.walk)
+    @OneToMany(() => WalkImage, walkImage => walkImage.walk, { cascade: true }) 
     images: WalkImage[]
 
 
