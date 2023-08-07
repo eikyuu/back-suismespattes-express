@@ -208,7 +208,7 @@ export class WalkController {
         const walkImage = await this.walkImageRepository.findWalkImageByFilename(request.params.filename);
 
         if (!walkImage) {
-            throw new NotFoundException('Image not found');
+            next(new NotFoundException('Image not found'));
         }
 
         return response.sendFile(path.resolve(WalkController.UPLOAD_DIR + walkImage.name))
