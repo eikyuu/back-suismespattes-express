@@ -48,7 +48,7 @@ export class WalkController {
             const walk: Walk = await this.walkRepository.findWalkBySlug(slug);
     
             if (!walk) {
-                throw new NotFoundException('Walk not found');
+                next(new NotFoundException('Walk not found'));
             }
     
             response.json(walk);
