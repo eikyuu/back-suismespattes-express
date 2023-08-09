@@ -164,6 +164,7 @@ export class WalkController {
             const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
 
             if (err) {
+                console.error(err);
                 return next(err);
             }
 
