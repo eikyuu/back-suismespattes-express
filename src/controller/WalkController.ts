@@ -14,7 +14,7 @@ const fs = require('fs')
 export class WalkController {
     private static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
     private static LANGUAGE: string = 'fr';
-    private static UPLOAD_DIR: string = process.env.RAILWAY_VOLUME_MOUNT_PATH;
+    private static UPLOAD_DIR: string = 'src/../uploads/walks/';
     private GOOGLE_API_KEY: string = process.env.GOOGLE_API_KEY;
 
     private walkRepository = WalkRepository;
@@ -149,7 +149,7 @@ export class WalkController {
 
         const storage = multer.diskStorage({
             destination: function (req, file, cb) {
-                cb(null, WalkController.UPLOAD_DIR + '/walks')
+                cb(null, WalkController.UPLOAD_DIR)
             },
             filename: function (req, file, cb) {
                 filename = file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.').pop();
@@ -170,7 +170,7 @@ export class WalkController {
 
             if (!walk) {
                 if (request.file) {
-                    await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
+                    await unlinkAsync(WalkController.UPLOAD_DIR + filename)
                 }
                 return next(new NotFoundException('Walk not found'));
             }
@@ -199,7 +199,7 @@ export class WalkController {
 
         const unlinkAsync = promisify(fs.unlink);
 
-        await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
+        await unlinkAsync(WalkController.UPLOAD_DIR + filename)
 
         return "image has been removed";
     }
@@ -212,7 +212,7 @@ export class WalkController {
             next(new NotFoundException('Image not found'));
         }
 
-        return response.sendFile(path.resolve(WalkController.UPLOAD_DIR +  '/walks/' + walkImage.name))
+        return response.sendFile(path.resolve(WalkController.UPLOAD_DIR + walkImage.name))
 
     }
 
