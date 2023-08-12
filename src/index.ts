@@ -10,7 +10,6 @@ import { env } from 'process'
 import cors = require('cors')
 const fs = require('fs')
 
-
 AppDataSource.initialize().then(async () => {
 
     // create express app
@@ -60,6 +59,16 @@ AppDataSource.initialize().then(async () => {
             });
         });
     };
+
+    app.post('/folder', async (req, res) => {
+        const { folder } = req.body;
+        try {
+            const files = await getFiles(folder);
+            res.json(files);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
 
     app.use(express.static('uploads'));
     app.use(express.static('data'));

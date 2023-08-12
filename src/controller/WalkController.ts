@@ -14,7 +14,7 @@ const fs = require('fs')
 export class WalkController {
     private static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
     private static LANGUAGE: string = 'fr';
-    private static UPLOAD_DIR: string = '/data';
+    private static UPLOAD_DIR: string = process.env.UPLOAD_PATH;
     private GOOGLE_API_KEY: string = process.env.GOOGLE_API_KEY;
 
     private walkRepository = WalkRepository;
@@ -59,8 +59,6 @@ export class WalkController {
 
     async save(request: Request, response: Response, next: NextFunction): Promise<Walk> {
 
-        //ajouter erreur si manque un champ
-        // ajouter enum pour les champs obligatorye
         const {
             name,
             description,
@@ -219,30 +217,6 @@ export class WalkController {
 
         return response.sendFile(path.resolve(WalkController.UPLOAD_DIR + '/walks/' + walkImage.name))
 
-    }
-
-        // methode qui retourne les fichiers d'un dossier (ici les images) 
-    getFiles = (dir: string): Promise<string[]> => {
-        return new Promise((resolve, reject) => {
-            fs.readdir(dir, (err, files) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(files);
-                }
-            });
-        });
-    };
-
-    async getFolder(request: Request, response: Response, next: NextFunction) {
-        //get form data
-        const { folder } = request.body;
-        try {
-            const files = await this.getFiles(folder);
-            response.json(files);
-        } catch (error) {
-            response.status(500).json({ error: error.message });
-        }
     }
 
 }
