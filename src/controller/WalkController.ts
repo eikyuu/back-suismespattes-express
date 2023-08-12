@@ -147,6 +147,11 @@ export class WalkController {
 
         let filename = '';
 
+        //create folder if not exist
+        if (!fs.existsSync(WalkController.UPLOAD_DIR + '/walks')) {
+            fs.mkdirSync(WalkController.UPLOAD_DIR + '/walks');
+        }
+
         const storage = multer.diskStorage({
             destination: function (req, file, cb) {
                 cb(null, WalkController.UPLOAD_DIR + '/walks/')
