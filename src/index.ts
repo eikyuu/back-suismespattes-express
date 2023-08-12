@@ -64,7 +64,7 @@ AppDataSource.initialize().then(async () => {
     app.use(express.static('uploads'));
 
     app.get('/uploads', async (req, res) => {
-        const files = await getFiles('uploads/walks');
+        const files = await getFiles('uploads');
         res.json(files);
     });
 
