@@ -8,6 +8,8 @@ import { UnknownRoutesHandler } from './middlewares/unknownRoutes.handler'
 import 'dotenv/config'
 import { env } from 'process'
 import cors = require('cors')
+const fs = require('fs')
+
 
 AppDataSource.initialize().then(async () => {
 
@@ -19,7 +21,7 @@ AppDataSource.initialize().then(async () => {
      * On dit à Express que l'on souhaite autoriser tous les noms de domaines
      * à faire des requêtes sur notre API.
      */
-        app.use(cors())
+    app.use(cors())
 
     // register express routes from defined application routes
     Routes.forEach(route => {
@@ -43,7 +45,28 @@ AppDataSource.initialize().then(async () => {
 
     app.get('/hello', (req, res) => {
         res.status(200).send({ message: 'hello world' });
-      });
+    });
+
+
+    // methode qui retourne les fichiers d'un dossier (ici les images) 
+    const getFiles = (dir: string): Promise<string[]> => {
+        return new Promise((resolve, reject) => {
+            fs.readdir(dir, (err, files) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(files);
+                }
+            });
+        });
+    };
+
+    app.use(express.static('uploads'));
+
+    app.get('/uploads', async (req, res) => {
+        const files = await getFiles('uploads/walks');
+        res.json(files);
+    });
 
 
     /**

@@ -34,8 +34,8 @@ export class Walk {
     @Column("float", { name : "longitude", nullable: true })
     longitude: number
 
-    @Column("boolean", { name : "obligatory_leash", default: false })
-    obligatoryLeash: boolean
+    @Column("enum", { name : "obligatory_leash", enum: ["YES", "NO", "RECOMANDED"], default: "NO" })
+    obligatoryLeash: ["YES", "NO", "RECOMANDED"]
 
     @Column("boolean", { name : "water_point", default: false })
     waterPoint: boolean
