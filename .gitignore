@@ -6,7 +6,7 @@ tmp/
 temp/
 
 # images folders
-uploads/walks/*jpg 
-uploads/walks/*png 
-uploads/walks/*jpeg
+data/walks/*jpg 
+data/walks/*png 
+data/walks/*jpeg
 .env
