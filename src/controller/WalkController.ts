@@ -59,27 +59,13 @@ export class WalkController {
 
     async save(request: Request, response: Response, next: NextFunction): Promise<Walk> {
 
-        const {
-            name,
-            description,
-            city,
-            postalCode,
-            street,
-            country,
-            obligatoryLeash,
-            waterPoint,
-            processionaryCaterpillarAlert,
-            cyanobacteriaAlert,
-            note,
-        } = request.body;
-
-        let slug = formatSlug(name);
+        let slug = formatSlug(request.body.name);
 
         let latitude: number;
         let longitude: number;
 
         try {
-            const geocodeResult = await this.geocodeAddress(`${postalCode} ${city} ${country}`);
+            const geocodeResult = await this.geocodeAddress(`${request.body.postalCode} ${request.body.city} ${request.body.country}`);
             latitude = geocodeResult.lat;
             longitude = geocodeResult.lng;
         } catch (error) {
@@ -87,20 +73,8 @@ export class WalkController {
         }
 
         const walk = Object.assign(new Walk(), {
-            name,
-            slug,
-            description,
-            city,
-            postalCode,
-            street,
-            country,
-            latitude,
-            longitude,
-            obligatoryLeash,
-            waterPoint,
-            processionaryCaterpillarAlert,
-            cyanobacteriaAlert,
-            note,
+            ...request.body,
+            slug : slug,
         });
 
         try {
