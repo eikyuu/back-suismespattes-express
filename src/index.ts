@@ -62,11 +62,7 @@ AppDataSource.initialize().then(async () => {
     };
 
     app.use(express.static('uploads'));
-
-    app.get('/uploads', async (req, res) => {
-        const files = await getFiles('data');
-        res.json(files);
-    });
+    app.use(express.static('data'));
 
 
     /**

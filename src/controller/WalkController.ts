@@ -216,4 +216,28 @@ export class WalkController {
 
     }
 
+        // methode qui retourne les fichiers d'un dossier (ici les images) 
+    getFiles = (dir: string): Promise<string[]> => {
+        return new Promise((resolve, reject) => {
+            fs.readdir(dir, (err, files) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(files);
+                }
+            });
+        });
+    };
+
+    async getFolder(request: Request, response: Response, next: NextFunction) {
+        //get form data
+        const { folder } = request.body;
+        try {
+            const files = await this.getFiles(folder);
+            response.json(files);
+        } catch (error) {
+            response.status(500).json({ error: error.message });
+        }
+    }
+
 }

@@ -44,5 +44,11 @@ export const Routes = [
     controller: WalkController,
     action: "getImage"
 },
+{
+    method: "post",
+    route: "/folder",
+    controller: WalkController,
+    action: "getFolder"
+},
 
 ]
