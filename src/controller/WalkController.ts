@@ -14,7 +14,7 @@ const fs = require('fs')
 export class WalkController {
     private static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
     private static LANGUAGE: string = 'fr';
-    private static UPLOAD_DIR: string = 'src/../uploads/walks/';
+    private static UPLOAD_DIR: string = '/data';
     private GOOGLE_API_KEY: string = process.env.GOOGLE_API_KEY;
 
     private walkRepository = WalkRepository;
