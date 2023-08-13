@@ -163,7 +163,7 @@ export class WalkController {
 
             try {
                 await WalkImageRepository.saveWalkImage(walkImage);
-                return response.send('Image uploaded successfully');
+                return response.send({ message: "Image has been uploaded" });
             } catch (error) {
                 return next({ error: error.message, status: 500 });
             }
