@@ -75,6 +75,8 @@ export class WalkController {
         const walk = Object.assign(new Walk(), {
             ...request.body,
             slug : slug,
+            latitude: request.body.latitude ? request.body.latitude : latitude,
+            longitude: request.body.longitude ? request.body.longitude : longitude,
         });
 
         try {
@@ -186,7 +188,7 @@ export class WalkController {
         const walkImage = await this.walkImageRepository.findWalkImageByFilename(request.params.filename);
 
         if (!walkImage) {
-            next(new NotFoundException('Image not found'));
+            return next(new NotFoundException('Image not found'));
         }
 
         return response.sendFile(path.resolve(WalkController.UPLOAD_DIR + '/walks/' + walkImage.name))
