@@ -139,8 +139,9 @@ export class WalkController {
         const upload = multer({ storage: storage }).single('image')
 
         upload(request, response, async function (err) {
+            
 
-            const walk: Walk = await WalkRepository.findWalkBySlug(request.body.slug);
+            const walk: Walk = await WalkRepository.findWalkBySlug(formatSlug(request.body.slug));
 
             if (err) {
                 console.error(err);
