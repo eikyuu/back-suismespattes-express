@@ -9,6 +9,7 @@ import 'dotenv/config'
 import { env } from 'process'
 import cors = require('cors')
 import { getFiles } from './utils/Utils';
+import { dumpDatabase, initScheduledJobs } from './scheduledFunctions/initScheduledFunctions';
 const fs = require('fs')
 
 AppDataSource.initialize().then(async () => {
@@ -92,6 +93,10 @@ AppDataSource.initialize().then(async () => {
     //         age: 24
     //     })
     // )
+
+    // ADD CALL to execute your function(s)
+    //initScheduledJobs();
+    //dumpDatabase();
 
     console.log(`Express application is running`)
 
