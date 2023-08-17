@@ -8,6 +8,7 @@ import { UnknownRoutesHandler } from './middlewares/unknownRoutes.handler'
 import 'dotenv/config'
 import { env } from 'process'
 import cors = require('cors')
+import { getFiles } from './utils/Utils';
 const fs = require('fs')
 
 AppDataSource.initialize().then(async () => {
@@ -46,20 +47,6 @@ AppDataSource.initialize().then(async () => {
         res.status(200).send({ message: 'hello world' });
     });
 
-
-    // methode qui retourne les fichiers d'un dossier (ici les images) 
-    const getFiles = (dir: string): Promise<string[]> => {
-        return new Promise((resolve, reject) => {
-            fs.readdir(dir, (err, files) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(files);
-                }
-            });
-        });
-    };
-
     app.post('/folder', async (req, res) => {
         const { folder } = req.body;
         try {
@@ -72,7 +59,6 @@ AppDataSource.initialize().then(async () => {
 
     app.use(express.static('uploads'));
     app.use(express.static('data'));
-
 
     /**
      * Pour toutes les autres routes non définies, on retourne une erreur
