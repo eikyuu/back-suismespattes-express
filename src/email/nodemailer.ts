@@ -11,6 +11,13 @@ const config = {
 }
 const transporter = nodemailer.createTransport(config);
 
+/**
+ * Sends an email using the provided data.
+ *
+ * @param {object} data - The data for the email.
+ * @param {function} callback - The callback function to handle the response.
+ * @return {string} The response from sending the email.
+ */
 export const send = (data) =>  {
     transporter.sendMail(data, (err, info) => {
         if (err) {

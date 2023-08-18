@@ -20,6 +20,12 @@ export class WalkController {
     private walkRepository = WalkRepository;
     private walkImageRepository = WalkImageRepository
 
+    /**
+     * Retrieves the latitude and longitude coordinates of a given address.
+     *
+     * @param {string} address - The address to geocode.
+     * @return {Promise<{lat: number, lng: number}> | string} - The latitude and longitude coordinates of the address if successful, or an error message if unsuccessful.
+     */
     private async geocodeAddress(address: string): Promise<{
         lat: number;
         lng: number;
@@ -33,6 +39,14 @@ export class WalkController {
         }
     }
 
+    /**
+     * Retrieves all walks.
+     *
+     * @param {Request} request - The request object.
+     * @param {Response} response - The response object.
+     * @param {NextFunction} next - The next function.
+     * @return {Promise<Walk[]>} - A promise that resolves to an array of Walk objects.
+     */
     async all(request: Request, response: Response, next: NextFunction): Promise<Walk[]> {
         try {
             const walks: Walk[] = await this.walkRepository.findAllWalks();
@@ -57,6 +71,14 @@ export class WalkController {
         }
     }
 
+    /**
+     * Saves a walk based on the provided request data.
+     *
+     * @param {Request} request - The request object containing the walk data.
+     * @param {Response} response - The response object to send the result.
+     * @param {NextFunction} next - The next function to handle the request.
+     * @return {Promise<Walk>} The saved walk object.
+     */
     async save(request: Request, response: Response, next: NextFunction): Promise<Walk> {
 
         let slug = formatSlug(request.body.name);
@@ -90,6 +112,14 @@ export class WalkController {
         }
     }
 
+    /**
+     * Removes a walk from the database and associated images.
+     *
+     * @param {Request} request - The HTTP request object.
+     * @param {Response} response - The HTTP response object.
+     * @param {NextFunction} next - The next function in the middleware chain.
+     * @return {Promise<void>} - A Promise that resolves when the walk has been removed.
+     */
     async remove(request: Request, response: Response, next: NextFunction): Promise<void> {
         const slug: string = request.params.slug;
 
@@ -115,6 +145,14 @@ export class WalkController {
         }
     }
 
+    /**
+     * Uploads an image.
+     *
+     * @param {Request} request - the request object
+     * @param {Response} response - the response object
+     * @param {NextFunction} next - the next function
+     * @return {Promise<void>} - a promise that resolves when the image is uploaded
+     */
     async uploadImage(request: Request, response: Response, next: NextFunction) {
 
         const unlinkAsync = promisify(fs.unlink)
@@ -175,6 +213,12 @@ export class WalkController {
 
     }
 
+    /**
+     * Removes an image file.
+     *
+     * @param {string} filename - The name of the image file to be removed.
+     * @return {Promise<string>} - A promise that resolves to a string indicating that the image has been removed.
+     */
     async removeImage(filename): Promise<string> {
 
         const unlinkAsync = promisify(fs.unlink);
@@ -184,6 +228,15 @@ export class WalkController {
         return "image has been removed";
     }
 
+    /**
+     * Retrieves an image based on the given filename from the walkImageRepository
+     * and sends it as a response.
+     *
+     * @param {Request} request - the HTTP request object
+     * @param {Response} response - the HTTP response object
+     * @param {NextFunction} next - the next middleware function
+     * @return {void}
+     */
     async getImage(request: Request, response: Response, next: NextFunction) {
 
         const walkImage = await this.walkImageRepository.findWalkImageByFilename(request.params.filename);
