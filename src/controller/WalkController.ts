@@ -153,15 +153,15 @@ export class WalkController {
      * @param {NextFunction} next - the next function
      * @return {Promise<void>} - a promise that resolves when the image is uploaded
      */
-    async uploadImage(request: Request, response: Response, next: NextFunction) {
-
+    async uploadImage(request: Request, response: Response, next: NextFunction): Promise<void> {
         const unlinkAsync = promisify(fs.unlink)
 
         let filename = '';
+        const uploadDir = path.join(WalkController.UPLOAD_DIR, 'walks');
 
         //create folder if not exist
-        if (!fs.existsSync(WalkController.UPLOAD_DIR + '/walks')) {
-            fs.mkdirSync(WalkController.UPLOAD_DIR + '/walks');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir);
         }
 
         const storage = multer.diskStorage({
@@ -169,7 +169,8 @@ export class WalkController {
                 cb(null, WalkController.UPLOAD_DIR + '/walks/')
             },
             filename: function (req, file, cb) {
-                filename = file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.').pop();
+                const fileExtension = file.originalname.split('.').pop();
+                filename = `${file.fieldname}-${Date.now()}.${fileExtension}`;
                 cb(null, filename)
             }
         })
@@ -178,8 +179,8 @@ export class WalkController {
 
         upload(request, response, async function (err) {
             
-
-            const walk: Walk = await WalkRepository.findWalkBySlug(formatSlug(request.body.slug));
+            const slug = formatSlug(request.body.slug);
+            const walk = await WalkRepository.findWalkBySlug(slug);
 
             if (err) {
                 console.error(err);
@@ -197,10 +198,9 @@ export class WalkController {
                 return next(new BadRequestException('No file uploaded'));
             }
 
-            const walkImage = Object.assign(new WalkImage(), {
-                name: request.file.filename,
-                walk: walk,
-            });
+            const walkImage = new WalkImage();
+            walkImage.name = request.file.filename;
+            walkImage.walk = walk;
 
             try {
                 await WalkImageRepository.saveWalkImage(walkImage);
