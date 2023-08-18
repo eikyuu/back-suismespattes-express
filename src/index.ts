@@ -9,8 +9,8 @@ import 'dotenv/config'
 import { env } from 'process'
 import cors = require('cors')
 import { getFiles } from './utils/Utils';
-import { dumpDatabase, initScheduledJobs } from './scheduledFunctions/initScheduledFunctions';
-const fs = require('fs')
+import { send } from './email/nodemailer';
+import { dumpDatabase } from './scheduledFunctions/scheduledFunctions';
 
 AppDataSource.initialize().then(async () => {
 
@@ -58,6 +58,17 @@ AppDataSource.initialize().then(async () => {
         }
     });
 
+    app.post('/send', async (req, res) => {
+        const { form, to, subject, text, html, attachments } = req.body;
+        const data = { form, to, subject, text, html: `<b>${text}</b>`, attachments  };
+        try {
+            const response = await send(data);
+            res.status(200).send({ message: "mail send" });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
     app.use(express.static('uploads'));
     app.use(express.static('data'));
 
@@ -77,25 +88,7 @@ AppDataSource.initialize().then(async () => {
      */
     app.listen(env.PORT);
 
-    // insert new users for test
-    // await AppDataSource.manager.save(
-    //     AppDataSource.manager.create(User, {
-    //         firstName: "Timber",
-    //         lastName: "Saw",
-    //         age: 27
-    //     })
-    // )
-
-    // await AppDataSource.manager.save(
-    //     AppDataSource.manager.create(User, {
-    //         firstName: "Phantom",
-    //         lastName: "Assassin",
-    //         age: 24
-    //     })
-    // )
-
-    // ADD CALL to execute your function(s)
-    //initScheduledJobs();
+    // CRON 
     //dumpDatabase();
 
     console.log(`Express application is running`)
