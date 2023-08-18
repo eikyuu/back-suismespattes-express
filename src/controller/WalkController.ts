@@ -9,7 +9,7 @@ import { promisify } from 'util';
 import path = require('path');
 import { WalkRepository } from '../repository/walk.repository';
 import { WalkImageRepository } from '../repository/walkImage.repository';
-const fs = require('fs')
+import fs = require('fs');
 
 export class WalkController {
     private static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
@@ -198,6 +198,16 @@ export class WalkController {
                 return next(new BadRequestException('No file uploaded'));
             }
 
+            if (request.file.size > 300000) {
+                await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
+                return next(new BadRequestException('File too large'));
+            }
+
+            if (request.file.mimetype !== 'image/jpeg' && request.file.mimetype !== 'image/png') {
+                await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
+                return next(new BadRequestException('Invalid file type'));
+            }
+
             const walkImage = new WalkImage();
             walkImage.name = request.file.filename;
             walkImage.walk = walk;
@@ -210,7 +220,6 @@ export class WalkController {
             }
 
         });
-
     }
 
     /**
@@ -219,7 +228,7 @@ export class WalkController {
      * @param {string} filename - The name of the image file to be removed.
      * @return {Promise<string>} - A promise that resolves to a string indicating that the image has been removed.
      */
-    async removeImage(filename): Promise<string> {
+    async removeImage(filename: string): Promise<string> {
 
         const unlinkAsync = promisify(fs.unlink);
 
@@ -237,7 +246,7 @@ export class WalkController {
      * @param {NextFunction} next - the next middleware function
      * @return {void}
      */
-    async getImage(request: Request, response: Response, next: NextFunction) {
+    async getImage(request: Request, response: Response, next: NextFunction): Promise<void> {
 
         const walkImage = await this.walkImageRepository.findWalkImageByFilename(request.params.filename);
 
