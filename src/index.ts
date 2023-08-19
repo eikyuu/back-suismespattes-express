@@ -72,7 +72,7 @@ AppDataSource.initialize().then(async () => {
                 "attachments": [
                   {
                     "filename": "1692447840.dump.sql",
-                    "path": `${__dirname}/${process.env.UPLOAD_PATH}/1692447840.dump.sql`,
+                    "path": `${__dirname}${process.env.UPLOAD_PATH}/1692447840.dump.sql`,
                   }
                 ]
               })
