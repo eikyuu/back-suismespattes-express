@@ -107,7 +107,7 @@ AppDataSource.initialize().then(async () => {
     app.listen(env.PORT);
 
     // CRON 
-   dumpDatabase();
+   //dumpDatabase();
 
     console.log(`Express application is running`)
 
