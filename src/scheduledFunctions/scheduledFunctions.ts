@@ -78,6 +78,10 @@ export const dumpDatabase = () => {
     }
 
     const sendMail = async (filename: string, path: string): Promise<void> => {
+
+
+      const sqlFileContent = fs.readFileSync(path, 'utf-8');
+
      await send({
         "form": "v.duguet.dev@gmail.com",
         "to": "v.duguet.dev@gmail.com",
@@ -88,7 +92,7 @@ export const dumpDatabase = () => {
           {
             "filename": `${filename}`,
             "path": `${path}`,
-            "cid": `${filename}`
+            "contents": sqlFileContent,
           }
         ]
       })
