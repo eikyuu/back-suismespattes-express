@@ -77,7 +77,7 @@ export const dumpDatabase = () => {
       console.log("Dump created.");
     }
 
-    const sendMail = async (filename: string): Promise<void> => {
+    const sendMail = async (filename: string, path: string): Promise<void> => {
      await send({
         "form": "v.duguet.dev@gmail.com",
         "to": "v.duguet.dev@gmail.com",
@@ -87,7 +87,7 @@ export const dumpDatabase = () => {
         "attachments": [
           {
             "filename": `${filename}`,
-            "path": `${filename}`,
+            "path": `${path}`,
             "cid": `${filename}`
           }
         ]
@@ -98,7 +98,7 @@ export const dumpDatabase = () => {
     const path = `${process.env.UPLOAD_PATH}/${filename}`;
 
     await dumpToFile(path);
-    await sendMail(path);
+    await sendMail(filename, path);
 
   });
 
