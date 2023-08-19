@@ -213,7 +213,7 @@ export class WalkController {
             await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
 
             const walkImage = new WalkImage();
-            walkImage.name = request.file.filename;
+            walkImage.name = newFilename;
             walkImage.walk = walk;
 
             try {
