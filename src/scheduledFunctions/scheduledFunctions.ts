@@ -14,7 +14,7 @@ export const dumpDatabase = () => {
     
       await new Promise((resolve, reject) => {
         exec(
-          `mysqldump --host=${process.env.DB_HOST} --port=${process.env.DB_PORT} --user=${process.env.DB_USER} --password=${process.env.DB_PASSWORD} ${process.env.DB_NAME} > ${path}`,
+          `mysqldump --host=${process.env.DB_HOST} --port=${process.env.DB_PORT} --user=${process.env.DB_USER} --password=${process.env.DB_PASSWORD} ${process.env.DB_NAME} | gzip > ${path}`,
           (error, _, stderr) => {
             if (error) {
               reject({ error: JSON.stringify(error), stderr });
@@ -60,13 +60,15 @@ export const dumpDatabase = () => {
       })
     }
 
-    const filename = `${Math.round(Date.now() / 1000)}.dump.sql`;
-    const path = `${process.env.UPLOAD_PATH}/${filename}`;
+    const timestamp = new Date().toISOString().replace(/[:.]+/g, '-');
+    const filename = `backup-${timestamp}.sql.gz`;
+    const filepath = `${process.env.UPLOAD_PATH}/${filename}`;
 
-    await dumpToFile(path);
-    await sendMail(filename, path);
-    await deleteFile(path);
+    await dumpToFile(filepath);
+    await sendMail(filename, filepath);
+    //await deleteFile(filepath);
 
+    console.log("Database backup complete!")
 
   });
 
