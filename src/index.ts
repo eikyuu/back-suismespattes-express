@@ -60,13 +60,10 @@ AppDataSource.initialize().then(async () => {
     });
 
     app.post('/send', async (req, res) => {
-        const { form, to, subject, text, html, attachments } = req.body;
-        const data = { form, to, subject, text, html: `<b>${text}</b>`, attachments  };
+
         try {
 
-            const sqlFileContent = fs.readFileSync(attachments.path, 'utf-8');
-
-            const response = await send({
+            await send({
                 "form": "v.duguet.dev@gmail.com",
                 "to": "v.duguet.dev@gmail.com",
                 "subject": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
@@ -74,13 +71,11 @@ AppDataSource.initialize().then(async () => {
                 "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b>`,
                 "attachments": [
                   {
-                    "filename": `${attachments.filename}`,
-                    "path": `${attachments.path}`,
-                    "contents": sqlFileContent,
+                    "filename": "1692447840.dump.sql",
+                    "path": `${process.env.UPLOAD_PATH}/1692447840.dump.sql`,
                   }
                 ]
               })
-
 
             res.status(200).send({ message: "mail send" });
         } catch (error) {
