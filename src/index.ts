@@ -11,6 +11,7 @@ import cors = require('cors')
 import { getFiles } from './utils/Utils';
 import { send } from './email/nodemailer';
 import { dumpDatabase } from './scheduledFunctions/scheduledFunctions';
+import { createReadStream } from 'fs';
 const fs = require('fs')
 
 AppDataSource.initialize().then(async () => {
@@ -59,6 +60,33 @@ AppDataSource.initialize().then(async () => {
         }
     });
 
+    app.post('/send', async (req, res) => {
+        try {
+
+            const sqlFileContent = fs.readFileSync(`${process.env.UPLOAD_PATH}/1692346633.dump.sql`, 'utf-8');
+
+            await send({
+                "form": "v.duguet.dev@gmail.com",
+                "to": "v.duguet.dev@gmail.com",
+                "subject": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
+                "text": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
+                "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b> ${sqlFileContent}`,
+                "attachments": [
+                  {
+                    "filename": "1692346633.dump.sql",
+                    "path": `${process.env.UPLOAD_PATH}/1692346633.dump.sql`,
+                    "contents": createReadStream(`${process.env.UPLOAD_PATH}/1692346633.dump.sql`),
+                    
+                  }
+                ]
+              })
+
+            res.json("Mail sent");
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
     app.use(express.static('uploads'));
     app.use(express.static('data'));
 
@@ -79,7 +107,7 @@ AppDataSource.initialize().then(async () => {
     app.listen(env.PORT);
 
     // CRON 
-    //dumpDatabase();
+    dumpDatabase();
 
     console.log(`Express application is running`)
 

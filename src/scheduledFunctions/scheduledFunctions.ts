@@ -1,10 +1,10 @@
 import { exec } from 'child_process';
+import { createReadStream, unlink } from "fs";
 import { send } from '../email/nodemailer';
 
 const CronJob = require("node-cron");
-const fs = require('fs')
 
-//TODO : A fix ne fonctionne pas en prod
+//TODO : A fix ne fonctionne pas en prod pour l'envoi de mail
 
 export const dumpDatabase = () => {
   const scheduledJobFunction = CronJob.schedule("*/1 * * * *", async () => {
@@ -28,9 +28,21 @@ export const dumpDatabase = () => {
       console.log("Dump created.");
     }
 
-    const sendMail = async (filename: string, path: string): Promise<void> => {
+    const deleteFile = async (path: string): Promise<void> => {
+      console.log(`Deleting local dump file at ${path}...`);
+    
+      await new Promise((resolve, reject) => {
+        unlink(path, (err) => {
+          reject({ error: JSON.stringify(err) });
+          return;
+        });
+        resolve(undefined);
+      });
+    
+      console.log("Local dump file deleted.");
+    }
 
-      const sqlFileContent = fs.readFileSync(path, 'utf-8');
+    const sendMail = async (filename: string, path: string): Promise<void> => {
 
      await send({
         "form": "v.duguet.dev@gmail.com",
@@ -42,7 +54,7 @@ export const dumpDatabase = () => {
           {
             "filename": `${filename}`,
             "path": `${path}`,
-            "contents": sqlFileContent,
+            "contents": createReadStream(path),
           }
         ]
       })
@@ -53,6 +65,8 @@ export const dumpDatabase = () => {
 
     await dumpToFile(path);
     await sendMail(filename, path);
+    await deleteFile(path);
+
 
   });
 
