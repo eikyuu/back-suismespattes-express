@@ -61,6 +61,7 @@ AppDataSource.initialize().then(async () => {
     });
 
     app.post('/send', async (req, res) => {
+        const filename = req.body.filename;
         try {
 
             const sqlFileContent = fs.readFileSync(`${process.env.UPLOAD_PATH}/1692456601.dump.sql`, 'utf-8');
@@ -73,9 +74,9 @@ AppDataSource.initialize().then(async () => {
                 "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b> ${sqlFileContent}`,
                 "attachments": [
                   {
-                    "filename": "1692456601.dump.sql",
-                    "path": `${process.env.UPLOAD_PATH}/1692456601.dump.sql`,
-                    "contents": createReadStream(`${process.env.UPLOAD_PATH}/1692456601.dump.sql`),
+                    "filename": `${filename}`,
+                    "path": `${process.env.UPLOAD_PATH}/${filename}`,
+                    "contents": createReadStream(`${process.env.UPLOAD_PATH}/${filename}`),
                     
                   }
                 ]
