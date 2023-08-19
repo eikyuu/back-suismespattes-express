@@ -63,7 +63,7 @@ AppDataSource.initialize().then(async () => {
     app.post('/send', async (req, res) => {
         try {
 
-            const sqlFileContent = fs.readFileSync(`${process.env.UPLOAD_PATH}/1692346633.dump.sql`, 'utf-8');
+            const sqlFileContent = fs.readFileSync(`${process.env.UPLOAD_PATH}/1692456601.dump.sql`, 'utf-8');
 
             await send({
                 "form": "v.duguet.dev@gmail.com",
@@ -73,9 +73,9 @@ AppDataSource.initialize().then(async () => {
                 "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b> ${sqlFileContent}`,
                 "attachments": [
                   {
-                    "filename": "1692346633.dump.sql",
-                    "path": `${process.env.UPLOAD_PATH}/1692346633.dump.sql`,
-                    "contents": createReadStream(`${process.env.UPLOAD_PATH}/1692346633.dump.sql`),
+                    "filename": "1692456601.dump.sql",
+                    "path": `${process.env.UPLOAD_PATH}/1692456601.dump.sql`,
+                    "contents": createReadStream(`${process.env.UPLOAD_PATH}/1692456601.dump.sql`),
                     
                   }
                 ]
@@ -107,7 +107,7 @@ AppDataSource.initialize().then(async () => {
     app.listen(env.PORT);
 
     // CRON 
-    dumpDatabase();
+    //dumpDatabase();
 
     console.log(`Express application is running`)
 
