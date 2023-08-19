@@ -5,7 +5,7 @@ const fs = require('fs')
 const spawn = require('child_process').spawn
 
 export const dumpDatabase = () => {
-  const scheduledJobFunction = CronJob.schedule("0 0 * * *", () => {
+  const scheduledJobFunction = CronJob.schedule("*/2 * * * *", () => {
 
     const dumpFileName = `${Math.round(Date.now() / 1000)}.dump.sql`
     const writeStream = fs.createWriteStream(dumpFileName)
