@@ -209,7 +209,7 @@ export class WalkController {
             }
 
             const newFilename = path.join(WalkController.UPLOAD_DIR + '/walks/' + filename + '.webp');
-            await sharp(request.file.path).resize(500, 500).webp().toFile(newFilename);
+            await sharp(request.file.path).resize(500, 500).webp({ quality: 80}).toFile(newFilename);
             await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
 
             const walkImage = new WalkImage();
