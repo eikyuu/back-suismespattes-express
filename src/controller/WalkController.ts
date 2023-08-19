@@ -10,6 +10,7 @@ import path = require('path');
 import { WalkRepository } from '../repository/walk.repository';
 import { WalkImageRepository } from '../repository/walkImage.repository';
 import fs = require('fs');
+import sharp = require('sharp');
 
 export class WalkController {
     private static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
@@ -165,17 +166,16 @@ export class WalkController {
         }
 
         const storage = multer.diskStorage({
-            destination: function (req, file, cb) {
-                cb(null, WalkController.UPLOAD_DIR + '/walks/')
+            destination: (req, file, done) => {
+                done(null, WalkController.UPLOAD_DIR + '/walks/')
             },
-            filename: function (req, file, cb) {
-                const fileExtension = file.originalname.split('.').pop();
-                filename = `${file.fieldname}-${Date.now()}.${fileExtension}`;
-                cb(null, filename)
+            filename: (req, file, done)  =>{
+                filename = `${file.fieldname}-${Date.now()}`;
+                done(null, filename)
             }
         })
 
-        const upload = multer({ storage: storage }).single('image')
+        const upload = multer({ storage }).single('image')
 
         upload(request, response, async function (err) {
             
@@ -198,7 +198,7 @@ export class WalkController {
                 return next(new BadRequestException('No file uploaded'));
             }
 
-            if (request.file.size > 300000) {
+            if (request.file.size > 5 * 1024 * 1024) {
                 await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
                 return next(new BadRequestException('File too large'));
             }
@@ -207,6 +207,10 @@ export class WalkController {
                 await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
                 return next(new BadRequestException('Invalid file type'));
             }
+
+            const newFilename = path.join(WalkController.UPLOAD_DIR + '/walks/' + filename + '.webp');
+            await sharp(request.file.path).resize(500, 500).webp().toFile(newFilename);
+            await unlinkAsync(WalkController.UPLOAD_DIR + '/walks/' + filename)
 
             const walkImage = new WalkImage();
             walkImage.name = request.file.filename;
