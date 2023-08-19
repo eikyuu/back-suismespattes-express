@@ -60,33 +60,17 @@ AppDataSource.initialize().then(async () => {
         }
     });
 
-    app.post('/send', async (req, res) => {
-        const filename = req.body.filename;
-        try {
-
-            const sqlFileContent = fs.readFileSync(`${process.env.UPLOAD_PATH}/1692456601.dump.sql`, 'utf-8');
-
-            await send({
-                "form": "v.duguet.dev@gmail.com",
-                "to": "v.duguet.dev@gmail.com",
-                "subject": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
-                "text": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
-                "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b> ${sqlFileContent}`,
-                "attachments": [
-                  {
-                    "filename": `${filename}`,
-                    "path": `${process.env.UPLOAD_PATH}/${filename}`,
-                    "contents": createReadStream(`${process.env.UPLOAD_PATH}/${filename}`),
-                    
-                  }
-                ]
-              })
-
-            res.json("Mail sent");
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    });
+    app.get('/single/:filename',function(req,res) {
+        const filename = req.params.filename;
+        const file = `${process.env.UPLOAD_PATH}/${filename}`;
+         
+        // Download function provided by express
+        res.download(`${file}`, function(err) {
+            if(err) {
+                console.log(err);
+            }
+        })
+    })
 
     app.use(express.static('uploads'));
     app.use(express.static('data'));
