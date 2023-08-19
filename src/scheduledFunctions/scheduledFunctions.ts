@@ -11,6 +11,10 @@ export const dumpDatabase = () => {
     const writeStream = fs.createWriteStream(dumpFileName)
 
     const dump = spawn('mysqldump', [
+      '-h',
+      `${process.env.DB_HOST}`,
+      '-P',
+      `${process.env.DB_PORT}`,
       '-u',
       `${process.env.DB_USER}`,
       `-p${process.env.DB_PASSWORD}`,
