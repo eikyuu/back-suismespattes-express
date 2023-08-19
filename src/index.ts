@@ -75,7 +75,7 @@ AppDataSource.initialize().then(async () => {
                 "attachments": [
                   {
                     "filename": `${attachments.filename}`,
-                    "path": `${attachments}`,
+                    "path": `${attachments.path}`,
                     "contents": sqlFileContent,
                   }
                 ]
