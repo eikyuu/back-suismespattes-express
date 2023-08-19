@@ -11,6 +11,7 @@ import cors = require('cors')
 import { getFiles } from './utils/Utils';
 import { send } from './email/nodemailer';
 import { dumpDatabase } from './scheduledFunctions/scheduledFunctions';
+const fs = require('fs')
 
 AppDataSource.initialize().then(async () => {
 
@@ -62,7 +63,25 @@ AppDataSource.initialize().then(async () => {
         const { form, to, subject, text, html, attachments } = req.body;
         const data = { form, to, subject, text, html: `<b>${text}</b>`, attachments  };
         try {
-            const response = await send(data);
+
+            const sqlFileContent = fs.readFileSync(attachments.path, 'utf-8');
+
+            const response = await send({
+                "form": "v.duguet.dev@gmail.com",
+                "to": "v.duguet.dev@gmail.com",
+                "subject": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
+                "text": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
+                "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b>`,
+                "attachments": [
+                  {
+                    "filename": `${attachments.filename}`,
+                    "path": `${attachments}`,
+                    "contents": sqlFileContent,
+                  }
+                ]
+              })
+
+
             res.status(200).send({ message: "mail send" });
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -89,7 +108,7 @@ AppDataSource.initialize().then(async () => {
     app.listen(env.PORT);
 
     // CRON 
-    dumpDatabase();
+    //dumpDatabase();
 
     console.log(`Express application is running`)
 
