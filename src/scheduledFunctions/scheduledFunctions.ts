@@ -26,6 +26,9 @@ export const dumpDatabase = () => {
     })
 
     dump.stdout.pipe(writeStream).on('finish', () => {
+      // attend que le dump soit fini
+      writeStream.close()
+      console.log(`Finished dumping database`);
       send({
         "form": "v.duguet.dev@gmail.com",
         "to": "v.duguet.dev@gmail.com",
@@ -40,7 +43,11 @@ export const dumpDatabase = () => {
           }
         ]
       })
-      console.log('Finished dumping database')
+
+      // fs.unlink(dumpFileName, () => {
+      //   console.log(`Deleted dump file ${dumpFileName}`)
+      // })
+
     })
 
   });
