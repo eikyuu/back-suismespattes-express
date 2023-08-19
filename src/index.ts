@@ -59,30 +59,6 @@ AppDataSource.initialize().then(async () => {
         }
     });
 
-    app.post('/send', async (req, res) => {
-
-        try {
-
-            await send({
-                "form": "v.duguet.dev@gmail.com",
-                "to": "v.duguet.dev@gmail.com",
-                "subject": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
-                "text": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
-                "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b>`,
-                "attachments": [
-                  {
-                    "filename": "1692447840.dump.sql",
-                    "path": `/data/1692447840.dump.sql`,
-                  }
-                ]
-              })
-
-            res.status(200).send({ message: "mail send" });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    });
-
     app.use(express.static('uploads'));
     app.use(express.static('data'));
 
