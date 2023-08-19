@@ -72,7 +72,7 @@ AppDataSource.initialize().then(async () => {
                 "attachments": [
                   {
                     "filename": "1692447840.dump.sql",
-                    "path": `data/walks/1692447840.dump.sql`,
+                    "path": `/data/walks/1692447840.dump.sql`,
                   }
                 ]
               })
