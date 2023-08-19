@@ -28,28 +28,22 @@ export const dumpDatabase = () => {
     dump.stdout.pipe(writeStream).on('finish', () => {
       // attend que le dump soit fini
       writeStream.close()
-      console.log(`Finished dumping database`);
-      // wait 5 seconds before send the dump
-      setTimeout(() => {
-        send({
-          "form": "v.duguet.dev@gmail.com",
-          "to": "v.duguet.dev@gmail.com",
-          "subject": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
-          "text": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
-          "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b>`,
-          "attachments": [
-            {
-              "filename": dumpFileName,
-              "path": `${dumpFileName}`,
-              "cid": `${dumpFileName}`
-            }
-          ]
-        })
-      }, 5000);
-      // fs.unlink(dumpFileName, () => {
-      //   console.log(`Deleted dump file ${dumpFileName}`)
-      // })
-
+      console.log('dump terminé')
+      // envoi du mail
+      send({
+        "form": "v.duguet.dev@gmail.com",
+        "to": "v.duguet.dev@gmail.com",
+        "subject": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
+        "text": `Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}`,
+        "html": `<b>Dump database ${process.env.DB_NAME}, ${new Date().toLocaleString()}</b>`,
+        "attachments": [
+          {
+            "filename": dumpFileName,
+            "path": `${dumpFileName}`,
+            "cid": `${dumpFileName}`
+          }
+        ]
+      })
     })
 
   });
