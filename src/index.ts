@@ -2,17 +2,13 @@ const express = require("express");
 import * as bodyParser from "body-parser"
 import { Request, Response } from "express"
 import { AppDataSource } from "./data-source"
-import { Routes } from "./routes"
 import { ExceptionsHandler } from './middlewares/exceptions.handler'
 import { UnknownRoutesHandler } from './middlewares/unknownRoutes.handler'
 import 'dotenv/config'
 import { env } from 'process'
 import cors = require('cors')
 import { getFiles } from './utils/Utils';
-import { send } from './email/nodemailer';
-import { dumpDatabase } from './scheduledFunctions/scheduledFunctions';
-import { createReadStream } from 'fs';
-const fs = require('fs')
+import routes from "./routes";
 
 AppDataSource.initialize().then(async () => {
 
@@ -26,19 +22,6 @@ AppDataSource.initialize().then(async () => {
      */
     app.use(cors())
 
-    // register express routes from defined application routes
-    Routes.forEach(route => {
-        (app as any)[route.method](route.route, (req: Request, res: Response, next: Function) => {
-            const result = (new (route.controller as any))[route.action](req, res, next)
-            if (result instanceof Promise) {
-                result.then(result => result !== null && result !== undefined ? res.send(result) : undefined)
-
-            } else if (result !== null && result !== undefined) {
-                res.json(result)
-            }
-        })
-    });
-
     /**
      * On dit à Express que l'on souhaite parser le body des requêtes en JSON
      *
@@ -46,9 +29,7 @@ AppDataSource.initialize().then(async () => {
      */
     app.use(express.json());
 
-    app.get('/hello', (req, res) => {
-        res.status(200).send({ message: 'hello world' });
-    });
+    app.use("/", routes);
 
     app.post('/folder', async (req, res) => {
         const { folder } = req.body;
@@ -90,9 +71,6 @@ AppDataSource.initialize().then(async () => {
      * On demande à Express d'ecouter les requêtes sur le port défini dans la config
      */
     app.listen(env.PORT);
-
-    // CRON 
-   //dumpDatabase();
 
     console.log(`Express application is running`)
 

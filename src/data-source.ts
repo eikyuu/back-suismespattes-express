@@ -6,6 +6,7 @@ import e = require('cors')
 import { Walk } from './entity/Walk'
 import { Review } from './entity/Review'
 import { WalkImage } from './entity/WalkImage'
+import { User } from './entity/User'
 
 export const AppDataSource = new DataSource({
     type: "mysql",
@@ -19,7 +20,8 @@ export const AppDataSource = new DataSource({
     entities: [
         Walk,
         Review,
-        WalkImage
+        WalkImage,
+        User
     ],
     migrations: [],
     subscribers: [],
