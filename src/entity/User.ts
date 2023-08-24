@@ -6,7 +6,6 @@ export class User {
     @PrimaryGeneratedColumn("uuid" , { name : "id" })
     id: number;
 
-
     @Column("varchar" , { name : "pseudo", unique: true, length: 255, nullable: false, default: null })
     pseudo: string;
 
@@ -24,6 +23,6 @@ export class User {
     })
     password: string;
 
-    @Column("json" , { name : "roles", nullable: false, default: '["ROLE_USER"]' })
+    @Column("json" , { name : "roles", nullable: false, default: null })
     roles: string[];
 }
