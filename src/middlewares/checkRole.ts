@@ -1,19 +1,18 @@
 import { Request, Response, NextFunction } from "express";
-import { getRepository } from "typeorm";
-
 import { User } from "../entity/User";
+import { UserRepository } from '../repository/user.repository';
 
 export const checkRole = (roles: Array<string>) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    //Get the user ID from previous midleware
-    const id = res.locals.jwtPayload.userId;
+    //Get the user email from previous midleware
+    const email = res.locals.jwtPayload.email;
 
     //Get user role from the database
-    const userRepository = getRepository(User);
+;
     let user: User;
     try {
-      user = await userRepository.findOneOrFail(id);
-    } catch (id) {
+      user = await  UserRepository.findOneOrFail({ where: { email: email } });
+    } catch (err) {
       res.status(401).send();
     }
 

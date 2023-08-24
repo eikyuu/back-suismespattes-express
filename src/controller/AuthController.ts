@@ -30,8 +30,7 @@ export class AuthController {
             }
 
             const token = sign({
-                id: user.id,
-                nom: user.pseudo,
+                pseudo: user.pseudo,
                 email: user.email,
             }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION});
     
