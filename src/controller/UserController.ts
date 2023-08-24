@@ -31,7 +31,10 @@ export default class UserController {
                 return next(new BadRequestException(`User : ${pseudo} already exists or invalid email : ${email}`));
             }
 
-            const user = Object.assign(new User(), request.body);
+            const user = Object.assign(new User(), 
+            request.body,
+            { roles: ['ROLE_USER'] }
+            );
 
             const errors = await validate(user);
 
