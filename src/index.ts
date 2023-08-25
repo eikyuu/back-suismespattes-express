@@ -9,6 +9,8 @@ import { env } from 'process'
 import cors = require('cors')
 import { getFiles } from './utils/Utils';
 import routes from "./routes";
+import { send } from './email/nodemailer';
+import e = require('cors');
 
 AppDataSource.initialize().then(async () => {
 
@@ -52,6 +54,23 @@ AppDataSource.initialize().then(async () => {
             }
         })
     })
+
+    app.post('/contact', async (req, res) => {
+        const { email, subject, message } = req.body;
+        try {
+            await send({
+                "form": process.env.GMAIL_USER,
+                "to": process.env.EMAIL,
+                "subject": subject,
+                "html": `You got a message from 
+                Email : ${email}
+                Message: ${message}`,
+              })
+            res.status(200).send({ message: "mail send" });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
 
     app.use(express.static('uploads'));
     app.use(express.static('data'));
