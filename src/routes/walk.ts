@@ -13,7 +13,7 @@ router.post("/", [checkJwt, checkRole(["ROLE_USER"])], WalkController.save);
 
 router.delete("/:slug",[checkJwt, checkRole(["ROLE_ADMIN"])], WalkController.remove);
 
-router.post("/images", [checkJwt, checkRole(["ROLE_USERddd"])], WalkController.uploadImage);
+router.post("/images", [checkJwt, checkRole(["ROLE_USER"])], WalkController.uploadImage);
 
 router.get("/images/:filename",[checkJwt, checkRole(["ROLE_ADMIN"])], WalkController.getImages);
 
