@@ -15,6 +15,6 @@ router.delete("/:slug",[checkJwt, checkRole(["ROLE_ADMIN"])], WalkController.rem
 
 router.post("/images", [checkJwt, checkRole(["ROLE_USER"])], WalkController.uploadImage);
 
-router.get("/images/:filename",[checkJwt, checkRole(["ROLE_ADMIN"])], WalkController.getImages);
+router.get("/images/:filename", WalkController.getImages);
 
 export default router;
