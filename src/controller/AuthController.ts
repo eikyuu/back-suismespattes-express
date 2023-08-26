@@ -29,13 +29,12 @@ export class AuthController {
                 return next(new BadRequestException('Invalid Credentials'));
             }
 
-            const token = sign({
-                pseudo: user.pseudo,
-                email: user.email,
-            }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION});
-    
+            // const token = sign({
+            //     pseudo: user.pseudo,
+            //     email: user.email,
+            // }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION});
+            // console.log(token);
             response.json({ 
-                token,
                 user: {
                     pseudo: user.pseudo,
                     email: user.email,
@@ -46,14 +45,6 @@ export class AuthController {
             return next(new BadRequestException({ message: error.message }));
         }
 
-    }
-
-    static logout = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
-        response.cookie('accessToken', '', { maxAge: 0, secure: true, httpOnly: true });
-        response.cookie('refreshToken', '', { maxAge: 0, secure: true, httpOnly: true });
-        response.json({
-            message: 'success'
-        })
     }
 
 } 
