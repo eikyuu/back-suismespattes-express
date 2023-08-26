@@ -34,7 +34,13 @@ export class AuthController {
                 email: user.email,
             }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION});
     
-            response.json({ token });
+            response.json({ 
+                token,
+                user: {
+                    pseudo: user.pseudo,
+                    email: user.email,
+                }
+            });
 
         } catch (error) {
             return next(new BadRequestException({ message: error.message }));
