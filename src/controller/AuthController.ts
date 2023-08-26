@@ -29,12 +29,13 @@ export class AuthController {
                 return next(new BadRequestException('Invalid Credentials'));
             }
 
-            // const token = sign({
-            //     pseudo: user.pseudo,
-            //     email: user.email,
-            // }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION});
-            // console.log(token);
+            const token = sign({
+                pseudo: user.pseudo,
+                email: user.email,
+            }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION});
+
             response.json({ 
+                token,
                 user: {
                     pseudo: user.pseudo,
                     email: user.email,
