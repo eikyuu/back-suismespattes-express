@@ -113,6 +113,27 @@ export class WalkController {
         }
     }
 
+    static update = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any> | void> => {
+        const slug: string = request.params.slug;
+        const walkToUpdate: Walk = await this.walkRepository.findWalkBySlug(slug);
+        if (!walkToUpdate) {
+            return next(new NotFoundException('Walk not found'));
+        }
+        try {
+            const walk = Object.assign(walkToUpdate, request.body);
+            console.log(request.body);
+            await this.walkRepository.save({
+                id: walkToUpdate.id,
+                ...walk
+            });
+            return response.json(walk);
+        }
+        catch (error) {
+            return next(new BadRequestException({ message: error.message }));
+        }
+    }
+
+
     /**
      * Removes a walk from the database and associated images.
      *

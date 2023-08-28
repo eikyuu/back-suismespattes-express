@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { WalkImage } from './WalkImage'
 
 @Entity()
@@ -7,25 +7,25 @@ export class Walk {
     @PrimaryGeneratedColumn("uuid" , { name : "id" })
     id: number
 
-    @Column("varchar", { name : "name", unique: true, length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "name", unique: true, length: 255, nullable: false })
     name: string
 
-    @Column("varchar", { name : "slug", unique: true, length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "slug", unique: true, length: 255, nullable: false })
     slug: string
 
-    @Column("text", { name : "description", nullable: false, default: null })
+    @Column("text", { name : "description", nullable: false })
     description: string
 
-    @Column("varchar", { name : "city", length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "city", length: 255, nullable: false })
     city: string
 
-    @Column("varchar", { name : "postal_code", length: 5, nullable: false, default: null })
+    @Column("varchar", { name : "postal_code", length: 5, nullable: false })
     postalCode: string
 
-    @Column("varchar", { name : "street", length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "street", length: 255, nullable: false })
     street: string
 
-    @Column("varchar", { name : "country", length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "country", length: 255, nullable: false })
     country: string
 
     @Column("float", { name : "latitude", nullable: true })
@@ -55,7 +55,7 @@ export class Walk {
     @UpdateDateColumn({ name : "updated_at"})
     updatedAt: Date
 
-    @OneToMany(() => WalkImage, walkImage => walkImage.walk, { cascade: true }) 
+    @OneToMany(() => WalkImage, walkImage => walkImage.walk, { cascade: true })
     images: WalkImage[]
 
 
