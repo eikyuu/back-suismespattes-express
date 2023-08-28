@@ -11,6 +11,8 @@ router.get("/:slug", WalkController.one);
 
 router.post("/", [checkJwt, checkRole(["ROLE_USER"])], WalkController.save);
 
+router.put("/:slug", [checkJwt, checkRole(["ROLE_ADMIN"])], WalkController.update);
+
 router.delete("/:slug",[checkJwt, checkRole(["ROLE_ADMIN"])], WalkController.remove);
 
 router.post("/images", [checkJwt, checkRole(["ROLE_USER"])], WalkController.uploadImage);
