@@ -121,7 +121,6 @@ export class WalkController {
         }
         try {
             const walk = Object.assign(walkToUpdate, request.body);
-            console.log(request.body);
             await this.walkRepository.save({
                 id: walkToUpdate.id,
                 ...walk
