@@ -9,4 +9,5 @@ temp/
 data/walks/*jpg 
 data/walks/*png 
 data/walks/*jpeg
+data/walks/*webp
 .env
