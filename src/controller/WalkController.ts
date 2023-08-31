@@ -119,10 +119,16 @@ export class WalkController {
         if (!walkToUpdate) {
             return next(new NotFoundException('Walk not found'));
         }
+
+        console.log(request.body.name);
+        let newSlug = formatSlug(request.body.name);
+
         try {
-            const walk = Object.assign(walkToUpdate, request.body);
+            
+            const walk = Object.assign(walkToUpdate, request.body, {
+                slug: newSlug
+            });
             await this.walkRepository.save({
-                id: walkToUpdate.id,
                 ...walk
             });
             return response.json(walk);
