@@ -1,14 +1,12 @@
 import { Router, Request, Response } from "express";
 import user from "./user";
 import auth from "./auth";
-import walk from "./walk";
+import destination from "./destination";
 
 const routes = Router();
 
 routes.use("/auth", auth);
-routes.use("/walks", walk);
+routes.use("/destination", destination);
 routes.use("/user", user);
-
-
 
 export default routes;

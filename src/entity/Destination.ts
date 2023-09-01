@@ -1,8 +1,8 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
-import { WalkImage } from './WalkImage'
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { DestinationImage } from './DestinationImage'
 
 @Entity()
-export class Walk {
+export class Destination {
 
     @PrimaryGeneratedColumn("uuid" , { name : "id" })
     id: number
@@ -55,8 +55,8 @@ export class Walk {
     @UpdateDateColumn({ name : "updated_at"})
     updatedAt: Date
 
-    @OneToMany(() => WalkImage, walkImage => walkImage.walk, { cascade: true })
-    images: WalkImage[]
+    @OneToMany(() => DestinationImage, destinationImage => destinationImage.destination, { cascade: true })
+    images: DestinationImage[]
 
 
 

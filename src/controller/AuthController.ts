@@ -12,7 +12,7 @@ export class AuthController {
         const { email, password } = request.body;
 
         if (!email || !password) {
-            return next(new BadRequestException({ message: 'Bad email or password' }));
+            return next(new BadRequestException({ message: 'Mauvais identifiants' }));
         }
 
         try {
@@ -22,11 +22,11 @@ export class AuthController {
             })
 
             if (!user) {
-                return next(new BadRequestException('This email is not registered'));
+                return next(new BadRequestException('Cette utilisateur n\'existe pas'));
             }
 
             if (!await compare(password, user.password)) {
-                return next(new BadRequestException('Invalid Credentials'));
+                return next(new BadRequestException('Mot de passe incorrect'));
             }
 
             const token = sign({

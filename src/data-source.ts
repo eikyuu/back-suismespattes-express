@@ -3,10 +3,10 @@ import "reflect-metadata"
 import { DataSource } from "typeorm"
 import 'dotenv/config'
 import e = require('cors')
-import { Walk } from './entity/Walk'
 import { Review } from './entity/Review'
-import { WalkImage } from './entity/WalkImage'
 import { User } from './entity/User'
+import { Destination } from './entity/Destination'
+import { DestinationImage } from './entity/DestinationImage'
 
 export const AppDataSource = new DataSource({
     type: "mysql",
@@ -15,12 +15,12 @@ export const AppDataSource = new DataSource({
     username: env.DB_USER,
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
-    synchronize: false,
-    logging: false,
+    synchronize: true,
+    logging: true,
     entities: [
-        Walk,
+        Destination,
         Review,
-        WalkImage,
+        DestinationImage,
         User
     ],
     migrations: [],

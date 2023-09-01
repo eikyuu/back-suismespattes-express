@@ -1,0 +1,22 @@
+import { Router } from "express";
+import { checkJwt } from '../middlewares/checkJwt';
+import { checkRole } from '../middlewares/checkRole';
+import { DestinationController } from '../controller/DestinationController';
+
+const router = Router();
+
+router.get("/", DestinationController.all);
+
+router.get("/:slug", DestinationController.one);
+
+router.post("/", [checkJwt, checkRole(["ROLE_USER"])], DestinationController.save);
+
+router.put("/:slug", [checkJwt, checkRole(["ROLE_ADMIN"])], DestinationController.update);
+
+router.delete("/:slug",[checkJwt, checkRole(["ROLE_ADMIN"])], DestinationController.remove);
+
+router.post("/images", [checkJwt, checkRole(["ROLE_USER"])], DestinationController.uploadImage);
+
+router.get("/images/:filename", DestinationController.getImages);
+
+export default router;

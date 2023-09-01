@@ -21,7 +21,7 @@ export const checkRole = (authorizedRoles: Array<string>) => {
     if (authorized) {
       next();
     } else {
-      res.status(401).send({ message: "Not authorized" });
+      res.status(401).send({ message: "Role non autorisé" });
     }
 
   };

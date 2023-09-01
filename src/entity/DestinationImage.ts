@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm"
-import { Walk } from './Walk'
+import { Destination } from './Destination'
 
 @Entity()
-export class WalkImage {
+export class DestinationImage {
 
     @PrimaryGeneratedColumn("uuid", { name : "id" } )
     id: number
@@ -10,6 +10,6 @@ export class WalkImage {
     @Column("varchar", { name : "name", length: 255, nullable: false } )
     name: string
 
-    @ManyToOne(() => Walk, walk => walk.images, { onDelete: 'CASCADE' })
-    walk: Walk
+    @ManyToOne(() => Destination, destination => destination.images, { onDelete: 'CASCADE' })
+    destination: Destination
 }

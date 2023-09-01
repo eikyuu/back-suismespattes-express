@@ -14,7 +14,7 @@ export default class UserController {
         const { pseudo, email, password } = request.body;
 
         if (!pseudo || !email || !password) {
-            return next(new BadRequestException('Missing data'));
+            return next(new BadRequestException('Données invalides'));
         }
 
         try {
@@ -28,7 +28,7 @@ export default class UserController {
             })
 
             if (userEmailAlreadyExists || userPseudoAlreadyExists) {
-                return next(new BadRequestException(`User : ${pseudo} already exists or invalid email : ${email}`));
+                return next(new BadRequestException(`Utilisateur : ${pseudo} existe déja ou email invalid : ${email}`));
             }
 
             const user = Object.assign(new User(), 
@@ -49,7 +49,7 @@ export default class UserController {
 
             await this.userRepository.save({ ...user, password: hashedPassword });
 
-            response.status(201).json({ message: 'User registered successfully' });
+            response.status(201).json({ message: 'Utilisateur crée' });
         } catch (error) {
             return next(new BadRequestException({ message: error.message }));
         }

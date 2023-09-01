@@ -12,7 +12,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     res.locals.jwtPayload = jwtPayload;
   } catch (error) {
     //If token is not valid, respond with 401 (unauthorized)
-    res.status(401).send({ message: "Unauthorized !" });
+    res.status(401).send({ message: "Non autorisé" });
     return;
   }
 
