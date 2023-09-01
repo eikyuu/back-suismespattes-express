@@ -13,3 +13,4 @@ export class DestinationImage {
     @ManyToOne(() => Destination, destination => destination.images, { onDelete: 'CASCADE' })
     destination: Destination
 }
+
