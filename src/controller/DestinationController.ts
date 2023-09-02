@@ -63,7 +63,7 @@ export class DestinationController {
             const destination: Destination = await this.destinationRepository.findDestinationBySlug(slug);
     
             if (!destination) {
-                next(new NotFoundException('Cette destination n\'existe pas'));
+                next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
             }
     
             response.json(destination);
@@ -106,11 +106,11 @@ export class DestinationController {
 
             const destinationToCheck = await this.destinationRepository.findDestinationBySlug(destination.slug);
             if (destinationToCheck) {
-                return next(new BadRequestException('Une destination avec ce nom existe déjà.'));
+                return next(new BadRequestException({ message: 'Cette destination existe déja' }));
             }
 
             await this.destinationRepository.save(destination);
-            response.json(destination);
+            response.json({ ok: true, destination });
         } catch (error) {
            return next(new BadRequestException({ message: error.message }));
         }
@@ -120,7 +120,7 @@ export class DestinationController {
         const slug: string = request.params.slug;
         const destinationToUpdate: Destination = await this.destinationRepository.findDestinationBySlug(slug);
         if (!destinationToUpdate) {
-            return next(new NotFoundException('Cette destination n\'existe pas'));
+            return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
         }
 
         let newSlug = formatSlug(request.body.name);
@@ -163,12 +163,12 @@ export class DestinationController {
         }));
 
         if (!destinationToRemove) {
-           return next(new NotFoundException('Cette destination n\'existe pas'));
+           return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
         }
 
         try {
             await this.destinationRepository.remove(destinationToRemove);
-            response.json("Destination has been removed");
+            response.json({ message: 'Destination supprimée' });
         } catch (error) {
             return next(new BadRequestException({ message: error.message }));
         }
@@ -208,7 +208,7 @@ export class DestinationController {
         upload(request, response, async function (error) {
             
             const slug = formatSlug(request.body.slug);
-            const destination = await this.destinationRepository.findDestinationBySlug(slug);
+            const destination = await DestinationRepository.findDestinationBySlug(slug);
 
             if (error) {
                 console.error(error);
@@ -219,21 +219,21 @@ export class DestinationController {
                 if (request.file) {
                     await unlinkAsync(DestinationController.UPLOAD_DIR + '/destinations/' + filename)
                 }
-                return next(new NotFoundException('Cette destination n\'existe pas'));
+                return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
             }
 
             if (!request.file) {
-                return next(new BadRequestException('Aucun fichier n\'a été uploadé'));
+                return next(new BadRequestException({ message: 'Fichier invalide' }));
             }
 
             if (request.file.size > 5 * 1024 * 1024) {
                 await unlinkAsync(DestinationController.UPLOAD_DIR + '/destinations/' + filename)
-                return next(new BadRequestException('Fichier trop volumineux'));
+                return next(new BadRequestException({ message: 'Fichier trop volumineux' }));
             }
 
             if (request.file.mimetype !== 'image/jpeg' && request.file.mimetype !== 'image/png') {
                 await unlinkAsync(DestinationController.UPLOAD_DIR + '/destinations/' + filename)
-                return next(new BadRequestException('Type de fichier invalide'));
+                return next(new BadRequestException({ message: 'Fichier invalide' }));
             }
 
             const newFilename = path.join(DestinationController.UPLOAD_DIR + '/destinations/' + filename + '.webp');
@@ -246,7 +246,7 @@ export class DestinationController {
 
             try {
                 await DestinationImageRepository.saveDestinationImage(destinationImage);
-                return response.send({ message: "Image correctement uploadée" });
+                return response.json({ok: true, message: "Image correctement uploadée" });
             } catch (error) {
                 return next({ error: error.message, status: 500 });
             }
@@ -283,10 +283,29 @@ export class DestinationController {
         const destinationImage = await this.destinationImageRepository.findDestinationImageByFilename(request.params.filename);
 
         if (!destinationImage) {
-            return next(new NotFoundException('Cette image n\'existe pas'));
+            return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
         }
 
         return response.sendFile(path.resolve(DestinationController.UPLOAD_DIR + '/destinations/' + destinationImage.name))
+
+    }
+
+    static removeDestinationImage = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        const destination = await this.destinationRepository.findDestinationBySlug(request.params.slug);
+
+        if (!destination) {
+            return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
+        }
+
+        const filenames = destination.images.map(image => image.name);
+
+        await Promise.all(filenames.map(async (filename) => {
+            await this.removeImage(filename);
+        }))
+
+        await this.destinationImageRepository.removeDestinationImageByDestinationSlug(destination);
+
+        response.json({ message: 'Destination image supprimée' });
 
     }
 

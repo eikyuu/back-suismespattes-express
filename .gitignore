@@ -6,8 +6,8 @@ tmp/
 temp/
 
 # images folders
-data/walks/*jpg 
-data/walks/*png 
-data/walks/*jpeg
-data/walks/*webp
+data/destinations/*jpg 
+data/destinations/*png 
+data/destinations/*jpeg
+data/destinations/*webp
 .env

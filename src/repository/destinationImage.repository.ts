@@ -1,4 +1,5 @@
 import { AppDataSource } from '../data-source';
+import { Destination } from '../entity/Destination';
 import { DestinationImage } from '../entity/DestinationImage';
 
 export const DestinationImageRepository = AppDataSource.getRepository(DestinationImage).extend({
@@ -17,6 +18,14 @@ export const DestinationImageRepository = AppDataSource.getRepository(Destinatio
 
     async saveDestinationImage(destinationImage: DestinationImage): Promise<DestinationImage> {
         return await this.save(destinationImage);
+    },
+
+    async removeDestinationImageByDestinationSlug(destination: Destination): Promise<DestinationImage> {
+        return await this.delete({
+            destination: destination
+        });
     }
+
+
     
 });

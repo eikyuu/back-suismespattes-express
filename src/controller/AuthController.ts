@@ -39,6 +39,7 @@ export class AuthController {
                 user: {
                     pseudo: user.pseudo,
                     email: user.email,
+                    roles: user.roles
                 }
             });
 

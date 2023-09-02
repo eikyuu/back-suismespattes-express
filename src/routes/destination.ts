@@ -19,4 +19,6 @@ router.post("/images", [checkJwt, checkRole(["ROLE_USER"])], DestinationControll
 
 router.get("/images/:filename", DestinationController.getImages);
 
+router.put("/images/:slug", [checkJwt, checkRole(["ROLE_ADMIN"])], DestinationController.removeDestinationImage);
+
 export default router;
