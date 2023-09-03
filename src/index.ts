@@ -11,6 +11,9 @@ import { getFiles } from './utils/Utils';
 import routes from "./routes";
 import { send } from './email/nodemailer';
 import e = require('cors');
+const fs = require('fs')
+
+
 
 AppDataSource.initialize().then(async () => {
 
@@ -71,6 +74,27 @@ AppDataSource.initialize().then(async () => {
             res.status(500).json({ error: error.message });
         }
     });
+
+    //rename directory
+    app.post('/rename', async (req, res) => {
+
+        const oldPath = 'data/walks';
+        const newPath = 'data/destinations';
+        const renameDirectory = (oldPath: string, newPath: string): Promise<void> => {
+            return new Promise((resolve, reject) => {
+              fs.rename(oldPath, newPath, (error) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve();
+                }
+              });
+            });
+          };
+        await renameDirectory(oldPath, newPath);
+
+        res.status(200).send({ message: "directory renamed" });
+    })
 
     app.use(express.static('uploads'));
     app.use(express.static('data'));
