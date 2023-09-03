@@ -25,7 +25,14 @@ AppDataSource.initialize().then(async () => {
      * On dit à Express que l'on souhaite autoriser tous les noms de domaines
      * à faire des requêtes sur notre API.
      */
-    app.use(cors())
+
+    const corsOptions = {
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        optionsSuccessStatus: 200
+    }
+    app.use(cors(corsOptions));
 
     /**
      * On dit à Express que l'on souhaite parser le body des requêtes en JSON
@@ -96,7 +103,7 @@ AppDataSource.initialize().then(async () => {
         res.status(200).send({ message: "directory renamed" });
     })
 
-    app.use(express.static('uploads'));
+    app.use(express.static('data/destination'));
     app.use(express.static('data'));
 
     /**
