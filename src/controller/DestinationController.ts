@@ -299,11 +299,13 @@ export class DestinationController {
 
         const filenames = destination.images.map(image => image.name);
 
+        this.destinationImageRepository.removeDestinationImageByDestination(destination);
+
         await Promise.all(filenames.map(async (filename) => {
             await this.removeImage(filename);
         }))
 
-        await this.destinationImageRepository.removeDestinationImageByDestinationSlug(destination);
+
 
         response.json({ message: 'Destination image supprimée' });
 

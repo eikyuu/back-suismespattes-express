@@ -20,7 +20,7 @@ export const DestinationImageRepository = AppDataSource.getRepository(Destinatio
         return await this.save(destinationImage);
     },
 
-    async removeDestinationImageByDestinationSlug(destination: Destination): Promise<DestinationImage> {
+    async removeDestinationImageByDestination(destination: Destination): Promise<DestinationImage> {
         return await this.delete({
             destination: destination
         });
