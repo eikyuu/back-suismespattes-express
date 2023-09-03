@@ -195,7 +195,7 @@ export class DestinationController {
 
         const storage = multer.diskStorage({
             destination: (req, file, done) => {
-                done(null, DestinationController.UPLOAD_DIR + '/destinations/')
+                done(null, DestinationController.UPLOAD_DIR + '/destination/')
             },
             filename: (req, file, done)  =>{
                 filename = `${file.fieldname}-${Date.now()}`;
@@ -217,7 +217,7 @@ export class DestinationController {
 
             if (!destination) {
                 if (request.file) {
-                    await unlinkAsync(DestinationController.UPLOAD_DIR + '/destinations/' + filename)
+                    await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
                 }
                 return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
             }
@@ -227,18 +227,18 @@ export class DestinationController {
             }
 
             if (request.file.size > 5 * 1024 * 1024) {
-                await unlinkAsync(DestinationController.UPLOAD_DIR + '/destinations/' + filename)
+                await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
                 return next(new BadRequestException({ message: 'Fichier trop volumineux' }));
             }
 
             if (request.file.mimetype !== 'image/jpeg' && request.file.mimetype !== 'image/png') {
-                await unlinkAsync(DestinationController.UPLOAD_DIR + '/destinations/' + filename)
+                await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
                 return next(new BadRequestException({ message: 'Fichier invalide' }));
             }
 
-            const newFilename = path.join(DestinationController.UPLOAD_DIR + '/destinations/' + filename + '.webp');
+            const newFilename = path.join(DestinationController.UPLOAD_DIR + '/destination/' + filename + '.webp');
             await sharp(request.file.path).resize(500, 500).webp({ quality: 80}).toFile(newFilename);
-            await unlinkAsync(DestinationController.UPLOAD_DIR + '/destinations/' + filename)
+            await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
 
             const destinationImage = new DestinationImage();
             destinationImage.name = filename + '.webp';
@@ -264,7 +264,7 @@ export class DestinationController {
 
         const unlinkAsync = promisify(fs.unlink);
 
-        await unlinkAsync(DestinationController.UPLOAD_DIR + '/destinations/' + filename)
+        await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
 
         return "Image supprimée";
     }
@@ -286,7 +286,7 @@ export class DestinationController {
             return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
         }
 
-        return response.sendFile(path.resolve(DestinationController.UPLOAD_DIR + '/destinations/' + destinationImage.name))
+        return response.sendFile(path.resolve(DestinationController.UPLOAD_DIR + '/destination/' + destinationImage.name))
 
     }
 
