@@ -78,8 +78,8 @@ AppDataSource.initialize().then(async () => {
     //rename directory
     app.post('/rename', async (req, res) => {
 
-        const oldPath = 'data/destinations';
-        const newPath = 'data/destination';
+        const oldPath = '/data/walks';
+        const newPath = '/data/destination';
         const renameDirectory = (oldPath: string, newPath: string): Promise<void> => {
             return new Promise((resolve, reject) => {
               fs.rename(oldPath, newPath, (error) => {
