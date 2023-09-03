@@ -186,7 +186,7 @@ export class DestinationController {
         const unlinkAsync = promisify(fs.unlink)
 
         let filename = '';
-        const uploadDir = path.join(DestinationController.UPLOAD_DIR, 'destinations');
+        const uploadDir = path.join(DestinationController.UPLOAD_DIR, 'destination');
 
         //create folder if not exist
         if (!fs.existsSync(uploadDir)) {
@@ -237,7 +237,7 @@ export class DestinationController {
             }
 
             const newFilename = path.join(DestinationController.UPLOAD_DIR + '/destination/' + filename + '.webp');
-            await sharp(request.file.path).resize(500, 500).webp({ quality: 100}).toFile(newFilename);
+            await sharp(request.file.path).resize(750, 550).webp({ quality: 100}).toFile(newFilename);
             await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
 
             const destinationImage = new DestinationImage();
