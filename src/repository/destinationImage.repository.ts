@@ -24,8 +24,13 @@ export const DestinationImageRepository = AppDataSource.getRepository(Destinatio
         return await this.delete({
             destination: destination
         });
+    },
+    
+    async removeDestinationImageByFilename(name: string): Promise<DestinationImage> {
+        return await this.delete({
+           name
+        });
     }
-
 
     
 });
