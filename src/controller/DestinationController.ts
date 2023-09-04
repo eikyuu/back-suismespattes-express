@@ -280,7 +280,7 @@ export class DestinationController {
      */
     static getImages = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
 
-        const destinationImage = await this.destinationImageRepository.findDestinationImageByFilename(request.params.filename);
+        const destinationImage: DestinationImage = await this.destinationImageRepository.findDestinationImageByFilename(request.params.filename);
 
         if (!destinationImage) {
             return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
@@ -291,17 +291,17 @@ export class DestinationController {
     }
 
     static removeDestinationImage = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-        const destination = await this.destinationRepository.findDestinationBySlug(request.params.slug);
+        const destination: Destination = await this.destinationRepository.findDestinationBySlug(request.params.slug);
 
         if (!destination) {
             return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
         }
 
-        const filenames = destination.images.map(image => image.name);
+        const filenames: string[] = destination.images.map(image => image.name);
 
-        await Promise.all(filenames.map(async (filename) => {
+        for (const filename of filenames) {
             await this.removeImage(filename);
-        }))
+        }
 
         this.destinationImageRepository.removeDestinationImageByDestination(destination);
 
