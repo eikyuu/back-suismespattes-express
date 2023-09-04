@@ -237,7 +237,7 @@ export class DestinationController {
             }
 
             const newFilename = path.join(DestinationController.UPLOAD_DIR + '/destination/' + filename + '.webp');
-            await sharp(request.file.path).resize(750, 550).webp({ quality: 100}).toFile(newFilename);
+            await sharp(request.file.path).resize(750, 550).webp({ quality: 100}).withMetadata().toFile(newFilename);
             await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
 
             const destinationImage = new DestinationImage();
