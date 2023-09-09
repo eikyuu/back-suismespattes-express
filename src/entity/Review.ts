@@ -6,7 +6,7 @@ export class Review {
     @PrimaryGeneratedColumn("uuid", { name  : "id"})
     id: number
 
-    @Column("varchar", { name : "name", length: 255, nullable: false, default: null })
+    @Column("varchar", { name : "content", length: 255, nullable: false, default: null })
     content: string
     
     @CreateDateColumn({ name : "created_at"})
