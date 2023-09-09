@@ -6,7 +6,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
     async findDestinationBySlug(slug: string): Promise<Destination> {
         return await this.findOne({
             where: { slug },
-            relations: ['images']
+            relations: ['images', 'category']
         });
     },
 
