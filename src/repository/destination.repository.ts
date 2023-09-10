@@ -12,14 +12,14 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
 
     async findAllDestinations(): Promise<Destination[]> {
         return await this.find({
-            relations: ['images']
+            relations: ['images', 'category']
         });
     },
 
     async findDestinationById(id: number): Promise<Destination> {
         return await this.findOne({
             where: { id },
-            relations: ['images']
+            relations: ['images', 'category']
         })
     },
 
