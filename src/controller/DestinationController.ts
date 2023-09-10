@@ -56,14 +56,15 @@ export class DestinationController {
 
             // ajoute l'utilisateur de chaque destination dans le tableau d'objets destination uniquement le champps
 
-            const userIsAdmin = await AppDataSource
+
+
+            destinations.forEach(async destination => {
+                const userIsAdmin = await AppDataSource
                 .getRepository(User)
                 .createQueryBuilder("user")
                 .select("user.isAdmin")
-                .where("user.id = :id", { id: 1 })
+                .where("user.id = :id", { id: destination.user.id })
                 .getOne()
-
-            destinations.forEach(destination => {
                 destination.user = userIsAdmin
             })
 
