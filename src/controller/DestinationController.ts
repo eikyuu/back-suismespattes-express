@@ -53,12 +53,8 @@ export class DestinationController {
     static all = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any>> => {
         try {
             const destinations: Destination[] = await this.destinationRepository.findAllDestinations();
-
-            // ajoute l'utilisateur de chaque destination dans le tableau d'objets destination uniquement le champps
-
-
-
-            destinations.forEach(async destination => {
+            
+            for (const destination of destinations) {
                 const userIsAdmin = await AppDataSource
                 .getRepository(User)
                 .createQueryBuilder("user")
@@ -66,7 +62,7 @@ export class DestinationController {
                 .where("user.id = :id", { id: destination.user.id })
                 .getOne()
                 destination.user = userIsAdmin
-            })
+            }
 
             return response.json(destinations);
         } catch (error) {
