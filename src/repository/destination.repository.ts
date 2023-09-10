@@ -12,7 +12,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
 
     async findAllDestinations(): Promise<Destination[]> {
         return await this.find({
-            relations: ['images', 'category']
+            relations: ['images', 'category', 'user']
         });
     },
 

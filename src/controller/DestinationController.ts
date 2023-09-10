@@ -11,6 +11,8 @@ import { DestinationRepository } from '../repository/destination.repository';
 import { DestinationImageRepository } from '../repository/destinationImage.repository';
 import { Destination } from '../entity/Destination';
 import { DestinationImage } from '../entity/DestinationImage';
+import { AppDataSource } from '../data-source';
+import { User } from '../entity/User';
 
 export class DestinationController {
     static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
@@ -51,6 +53,20 @@ export class DestinationController {
     static all = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any>> => {
         try {
             const destinations: Destination[] = await this.destinationRepository.findAllDestinations();
+
+            // ajoute l'utilisateur de chaque destination dans le tableau d'objets destination uniquement le champps
+
+            const userIsAdmin = await AppDataSource
+                .getRepository(User)
+                .createQueryBuilder("user")
+                .select("user.isAdmin")
+                .where("user.id = :id", { id: 1 })
+                .getOne()
+
+            destinations.forEach(destination => {
+                destination.user = userIsAdmin
+            })
+
             return response.json(destinations);
         } catch (error) {
             next(error);

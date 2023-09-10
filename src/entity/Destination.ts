@@ -69,5 +69,7 @@ export class Destination {
     @JoinColumn({ name: "user", referencedColumnName: "email" })
     user: User
 
+    @Column("boolean", { name: "is_favorite", default: false })
+    isFavorite: boolean
 }
 
