@@ -31,9 +31,9 @@ export default class UserController {
                 return next(new BadRequestException(`Utilisateur : ${pseudo} existe déja ou email invalid : ${email}`));
             }
 
-            const user = Object.assign(new User(), 
-            request.body,
-            { roles: ['ROLE_USER'] }
+            const user = Object.assign(new User(),
+                request.body,
+                { roles: ['ROLE_USER'] }
             );
 
             const errors = await validate(user);
@@ -45,7 +45,7 @@ export default class UserController {
                 return;
             }
 
-            const hashedPassword = await hashSync(user.password, 12);
+            const hashedPassword = hashSync(user.password, 12);
 
             await this.userRepository.save({ ...user, password: hashedPassword });
 

@@ -52,13 +52,13 @@ export class User {
     token: string;
 
     @Column("varchar" , { name : "token_expires_at", length: 255, nullable: true, default: null })
-    tokenExpiresAt: string;
+    tokenExpiresAt: Date;
 
     @Column("varchar" , { name : "reset_token", length: 255, nullable: true, default: null })
     resetToken: string;
 
     @Column("varchar" , { name : "reset_token_expires_at", length: 255, nullable: true, default: null })
-    resetTokenExpiresAt: string;
+    resetTokenExpiresAt: Date;
 
     @Column("varchar" , { name : "email_verification_token", length: 255, nullable: true, default: null })
     emailVerificationToken: string;
@@ -70,7 +70,7 @@ export class User {
     emailVerifiedAt: string;
 
     @Column("varchar" , { name : "password_reset_at", length: 255, nullable: true, default: null })
-    passwordResetAt: string;
+    passwordResetAt: Date;
 
     @Column("varchar" , { name : "last_login_at", length: 255, nullable: true, default: null })
     lastLoginAt: string;

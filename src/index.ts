@@ -72,9 +72,11 @@ AppDataSource.initialize().then(async () => {
                 "form": process.env.GMAIL_USER,
                 "to": process.env.EMAIL,
                 "subject": subject,
-                "html": `You got a message from 
-                Email : ${email}
-                Message: ${message}`,
+                template: 'email',
+                context:{
+                    email: email,
+                    message: message 
+                }
               })
             res.status(200).send({ message: "mail send" });
         } catch (error) {
