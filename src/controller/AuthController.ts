@@ -70,18 +70,19 @@ export class AuthController {
             })
 
             if (!user) {
-                return next(new BadRequestException('Email inconnu ou non valide')); 
+                return response.json({ message: 'Si cette adresse email existe, un email vous a été envoyé' });
             }
 
            user.resetToken = crypto.randomBytes(8).toString('hex');
            user.resetTokenExpiresAt = new Date(Date.now() + 86400);
 
            await this.userRepository.save(user);
-
+            console.log(user.email);
             await send({
-                "form": process.env.GMAIL_USER,
-                "to": process.env.EMAIL,
+                "from": `Suismespattes <${process.env.EMAIL}>`,
+                "to": user.email,
                 "subject": "Demande de réinitialisation de mot de passe",
+                "text": `Demande de réinitialisation de mot de passe`,
                 template: 'resetPassword',
                 context:{
                     resetToken: user.resetToken,
@@ -90,7 +91,7 @@ export class AuthController {
               })
 
 
-            response.json({ message: 'Email envoyé' });
+            response.json({ message: 'Si cette adresse email existe, un email vous a été envoyé' });
 
         } catch (error) {
             return next(new BadRequestException({ message: error.message }));

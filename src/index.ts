@@ -67,11 +67,13 @@ AppDataSource.initialize().then(async () => {
 
     app.post('/contact', async (req, res) => {
         const { email, subject, message } = req.body;
+        console.log(process.env.EMAIL);
         try {
             await send({
-                "form": process.env.GMAIL_USER,
+                "from": `Contact <${process.env.EMAIL}>`,
                 "to": process.env.EMAIL,
                 "subject": subject,
+                "text": message,
                 template: 'email',
                 context:{
                     email: email,
