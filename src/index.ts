@@ -1,6 +1,5 @@
 const express = require("express");
 import * as bodyParser from "body-parser"
-import { Request, Response } from "express"
 import { AppDataSource } from "./data-source"
 import { ExceptionsHandler } from './middlewares/exceptions.handler'
 import { UnknownRoutesHandler } from './middlewares/unknownRoutes.handler'
@@ -10,10 +9,8 @@ import cors = require('cors')
 import { getFiles } from './utils/Utils';
 import routes from "./routes";
 import { send } from './email/nodemailer';
-import e = require('cors');
+import { limiter } from './middlewares/limiter';
 const fs = require('fs')
-
-
 
 AppDataSource.initialize().then(async () => {
 
@@ -40,6 +37,11 @@ AppDataSource.initialize().then(async () => {
      * @example app.post('/', (req) => req.body.prop)
      */
     app.use(express.json());
+
+    /**
+     * Middleware limitant le nombre de requêtes pour toutes les routes
+     */
+    app.use(limiter);
 
     app.use("/", routes);
 
@@ -126,6 +128,6 @@ AppDataSource.initialize().then(async () => {
      */
     app.listen(env.PORT);
 
-    console.log(`Express application is running`)
+    console.log(`Express application is running on http://localhost:${env.PORT}`);
 
 }).catch(error => console.log(error))

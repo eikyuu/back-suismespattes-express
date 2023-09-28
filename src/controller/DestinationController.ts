@@ -94,7 +94,7 @@ export class DestinationController {
      * @return {Promise<Destination>} The saved destination object.
      */
     static save = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any> | void> => {
-        let formattedSlug = formatSlug(request.body.name);
+        let formattedSlug = formatSlug(request.body.name.trim());
         let latitude: number;
         let longitude: number;
         try {
@@ -136,7 +136,7 @@ export class DestinationController {
             return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
         }
 
-        let newSlug = formatSlug(request.body.name);
+        let newSlug = formatSlug(request.body.name.trim());
 
         try {
             
