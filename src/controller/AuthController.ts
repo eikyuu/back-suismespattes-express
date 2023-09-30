@@ -106,10 +106,8 @@ export class AuthController {
             return next(new BadRequestException({ message: 'Données invalides' }));
         }
 
-        // check if password is strong enough (8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character)
-
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
+        // regex password (8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character)
+        const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
         if (!passwordRegex.test(password)) {
             return next(new BadRequestException({ message: 'Mot de passe trop faible (8 caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial)' }));
         }
