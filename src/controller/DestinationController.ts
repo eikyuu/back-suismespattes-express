@@ -53,7 +53,13 @@ export class DestinationController {
     static all = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any>> => {
 
         try {
-            const destinations: Destination[] = await this.destinationRepository.findPaginatedDestinations(parseInt(request.query.page as string), parseInt(request.query.limit as string));
+
+            let destinations: Destination[];
+            if (request.query.page && request.query.limit) {
+                destinations = await this.destinationRepository.findPaginatedDestinations(parseInt(request.query.page as string), parseInt(request.query.limit as string));
+            } else {
+                destinations  = await this.destinationRepository.findAllDestinations();
+            }
             
             for (const destination of destinations) {
                 const userIsAdmin = await AppDataSource
@@ -65,7 +71,6 @@ export class DestinationController {
                 destination.user = userIsAdmin
             }
             
-
             return response.json({
                 data: destinations,
                 pagination: {
