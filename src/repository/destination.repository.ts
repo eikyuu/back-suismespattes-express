@@ -16,6 +16,17 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
         });
     },
 
+    async findPaginatedDestinations(page: number, limit: number): Promise<Destination[]> {
+        return this.find({
+            relations: ['images', 'category', 'user'],
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                createdAt: 'DESC'
+            }
+        });
+    },
+
     async findDestinationById(id: number): Promise<Destination> {
         return await this.findOne({
             where: { id },

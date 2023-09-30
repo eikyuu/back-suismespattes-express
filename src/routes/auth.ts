@@ -8,5 +8,6 @@ import { signInLimiter } from '../middlewares/limiter';
   router.post("/login", signInLimiter, AuthController.login);
   router.post("/forget-password", AuthController.forgetPassword);
   router.post("/reset-password", AuthController.resetPassword);
+  router.post("/confirm-code", AuthController.confirmCode);
 
   export default router;

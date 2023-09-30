@@ -51,8 +51,9 @@ export class DestinationController {
      * @return {Promise<Destination[]>} - A promise that resolves to an array of Destination objects.
      */
     static all = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any>> => {
+
         try {
-            const destinations: Destination[] = await this.destinationRepository.findAllDestinations();
+            const destinations: Destination[] = await this.destinationRepository.findPaginatedDestinations(parseInt(request.query.page as string), parseInt(request.query.limit as string));
             
             for (const destination of destinations) {
                 const userIsAdmin = await AppDataSource
@@ -63,8 +64,17 @@ export class DestinationController {
                 .getOne()
                 destination.user = userIsAdmin
             }
+            
 
-            return response.json(destinations);
+            return response.json({
+                data: destinations,
+                pagination: {
+                    page: parseInt(request.query.page as string),
+                    limit: parseInt(request.query.limit as string),
+                    total: await this.destinationRepository.count(),
+                    totalPages: Math.ceil(await this.destinationRepository.count() / parseInt(request.query.limit as string))
+                }
+            });
         } catch (error) {
             next(error);
         }

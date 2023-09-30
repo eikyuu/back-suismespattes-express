@@ -4,6 +4,7 @@ import { compare, hashSync } from 'bcryptjs';
 import { BadRequestException } from '../utils/Exceptions';
 import { sign } from 'jsonwebtoken';
 import { send } from '../email/nodemailer';
+import { validate } from 'class-validator';
 const crypto = require('crypto');
 
 export class AuthController {
@@ -105,6 +106,14 @@ export class AuthController {
             return next(new BadRequestException({ message: 'Données invalides' }));
         }
 
+        // check if password is strong enough (8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character)
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!passwordRegex.test(password)) {
+            return next(new BadRequestException({ message: 'Mot de passe trop faible (8 caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial)' }));
+        }
+
         try {
 
             const user = await this.userRepository.findOne({
@@ -128,4 +137,27 @@ export class AuthController {
         }
     }
 
+    static confirmCode = async(request: Request, response: Response, next: NextFunction): Promise<any> => {
+        const { resetToken } = request.body;
+
+        if (!resetToken) {
+            return next(new BadRequestException({ message: 'Données invalides' }));
+        }
+
+        try {
+
+            const user = await this.userRepository.findOne({
+                where: { resetToken },
+            })
+
+            if (!user) {
+                return next(new BadRequestException('Token invalide ou expiré')); 
+            }
+
+            response.json({ message: 'Token valide' });
+
+        } catch (error) {
+            return next(new BadRequestException({ message: error.message }));
+        }
+    }
 } 
