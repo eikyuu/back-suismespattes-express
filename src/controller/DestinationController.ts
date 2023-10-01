@@ -93,7 +93,6 @@ export class DestinationController {
             if (!destination) {
                 next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
             }
-    
             response.json(destination);
         } catch (error) {
             next(error);
@@ -335,6 +334,19 @@ export class DestinationController {
 
         response.json({ message: 'Destination image supprimée' });
 
+    }
+
+    static findFilteredDestinations = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        const page = parseInt(request.query.page as string);
+        const limit = parseInt(request.query.limit as string);
+
+        const destinations: Destination[] = await this.destinationRepository.findFilteredDestinations(request.query.search.toString(), page, limit);
+
+        if (!destinations) {
+            return next(new NotFoundException({ message: 'Aucune destination ne correspond à ces critères' }));
+        }
+
+        response.json(destinations);
     }
 
 }

@@ -1,3 +1,4 @@
+import { Like } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { Destination } from '../entity/Destination';
 
@@ -42,6 +43,20 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
         return await this.delete({
            slug
         });
-    }
+    },
+
+    async findFilteredDestinations(search: string, page: number, limit: number): Promise<Destination[]> {
+        return this.find({
+            where: {
+                name: Like(`%${search}%`)
+            },
+            relations: ['images', 'category'],
+            skip: (page - 1) * limit,
+            take: limit,
+            order: {
+                createdAt: 'DESC'
+            }
+        });
+    },
 
 });
