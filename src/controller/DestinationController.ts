@@ -32,7 +32,7 @@ export class DestinationController {
     static geocodeAddress = async (address: string): Promise<{
         lat: number;
         lng: number;
-    }>  => {
+    }> => {
         const geocodingUrl: string = `${DestinationController.GEOCODING_URI}?address=${encodeURIComponent(address)}&key=${this.GOOGLE_API_KEY}&language=${DestinationController.LANGUAGE}`;
         try {
             const response = await axios.get(geocodingUrl);
@@ -58,21 +58,21 @@ export class DestinationController {
             if (request.query.page && request.query.limit) {
                 destinations = await this.destinationRepository.findPaginatedDestinations(parseInt(request.query.page as string), parseInt(request.query.limit as string));
             } else {
-                destinations  = await this.destinationRepository.findAllDestinations();
+                destinations = await this.destinationRepository.findAllDestinations();
             }
-            
+
             for (const destination of destinations) {
                 const userIsAdmin = await AppDataSource
-                .getRepository(User)
-                .createQueryBuilder("user")
-                .select("user.isAdmin")
-                .where("user.id = :id", { id: destination.user.id })
-                .getOne()
+                    .getRepository(User)
+                    .createQueryBuilder("user")
+                    .select("user.isAdmin")
+                    .where("user.id = :id", { id: destination.user.id })
+                    .getOne()
                 destination.user = userIsAdmin
             }
-            
+
             return response.json({
-                data: destinations,
+                destinations,
                 pagination: {
                     page: parseInt(request.query.page as string),
                     limit: parseInt(request.query.limit as string),
@@ -85,11 +85,11 @@ export class DestinationController {
         }
     }
 
-    static one = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+    static findByName = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         try {
-            const slug: string = request.params.slug;
-            const destination: Destination = await this.destinationRepository.findDestinationBySlug(slug);
-    
+            const name: string = request.params.name;
+            const destination: Destination = await this.destinationRepository.findDestinationByName(name);
+
             if (!destination) {
                 next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
             }
@@ -98,6 +98,46 @@ export class DestinationController {
             next(error);
         }
     }
+
+    static fetchAllNamesAndSlugs = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        const search = request.query.name;
+        try {
+            const destinations = await this.destinationRepository.findAllNameBySearch(search as string);
+            response.json(
+                destinations.map(destination => {
+                    return {
+                        name: destination.name,
+                        slug: destination.slug
+                    }
+                })
+            );
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static one = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        try {
+            const slug: string = request.params.slug;
+            const destination: Destination = await this.destinationRepository.findDestinationBySlug(slug);
+
+            const userIsAdmin = await AppDataSource
+            .getRepository(User)
+            .createQueryBuilder("user")
+            .select("user.isAdmin")
+            .where("user.id = :id", { id: destination.user.id })
+            .getOne()
+            destination.user = userIsAdmin
+
+            if (!destination) {
+                next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
+            }
+            response.json(destination);
+        } catch (error) {
+            next(error);
+        }
+    }
+
 
     /**
      * Saves a destination based on the provided request data.
@@ -121,14 +161,14 @@ export class DestinationController {
 
         const destination = Object.assign(new Destination(), {
             ...request.body,
-            slug : formattedSlug,
+            slug: formattedSlug,
             latitude: request.body.latitude ? request.body.latitude : latitude,
             longitude: request.body.longitude ? request.body.longitude : longitude,
         });
 
         try {
             if (!destination || typeof destination !== "object") {
-              return next(new BadRequestException('Requête invalide'));
+                return next(new BadRequestException('Requête invalide'));
             }
 
             const destinationToCheck = await this.destinationRepository.findDestinationBySlug(destination.slug);
@@ -139,7 +179,7 @@ export class DestinationController {
             await this.destinationRepository.save(destination);
             response.json({ ok: true, destination });
         } catch (error) {
-           return next(new BadRequestException({ message: error.message }));
+            return next(new BadRequestException({ message: error.message }));
         }
     }
 
@@ -153,8 +193,8 @@ export class DestinationController {
         let newSlug = formatSlug(request.body.name.trim());
 
         try {
-            
-            const destination = Object.assign(destinationToUpdate, request.body, { 
+
+            const destination = Object.assign(destinationToUpdate, request.body, {
                 slug: newSlug
             });
             await this.destinationRepository.save({
@@ -176,7 +216,7 @@ export class DestinationController {
      * @param {NextFunction} next - The next function in the middleware chain.
      * @return {Promise<void>} - A Promise that resolves when the destination has been removed.
      */
-   static remove = async (request: Request, response: Response, next: NextFunction): Promise<void>  => {
+    static remove = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         const slug: string = request.params.slug;
 
         const destinationToRemove: Destination = await this.destinationRepository.findDestinationBySlug(slug);
@@ -190,7 +230,7 @@ export class DestinationController {
         }));
 
         if (!destinationToRemove) {
-           return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
+            return next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
         }
 
         try {
@@ -224,7 +264,7 @@ export class DestinationController {
             destination: (req, file, done) => {
                 done(null, DestinationController.UPLOAD_DIR + '/destination/')
             },
-            filename: (req, file, done)  =>{
+            filename: (req, file, done) => {
                 filename = `${file.fieldname}-${Date.now()}`;
                 done(null, filename)
             }
@@ -233,7 +273,7 @@ export class DestinationController {
         const upload = multer({ storage }).single('image')
 
         upload(request, response, async function (error) {
-            
+
             const slug = formatSlug(request.body.slug);
             const destination = await DestinationRepository.findDestinationBySlug(slug);
 
@@ -258,13 +298,13 @@ export class DestinationController {
                 return next(new BadRequestException({ message: 'Fichier trop volumineux' }));
             }
 
-            if (request.file.mimetype !== 'image/jpeg' && request.file.mimetype !== 'image/png') {
+            if (request.file.mimetype !== 'image/jpeg' && request.file.mimetype !== 'image/png' && request.file.mimetype !== 'image/webp' && request.file.mimetype !== 'image/heic') {
                 await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
                 return next(new BadRequestException({ message: 'Fichier invalide' }));
             }
 
             const newFilename = path.join(DestinationController.UPLOAD_DIR + '/destination/' + filename + '.webp');
-            await sharp(request.file.path).rotate().resize(1140, 760).webp({ quality: 100}).toFile(newFilename);
+            await sharp(request.file.path).rotate().resize(1140, 760).webp({ quality: 100 }).toFile(newFilename);
             await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
 
             const destinationImage = new DestinationImage();
@@ -273,7 +313,7 @@ export class DestinationController {
 
             try {
                 await DestinationImageRepository.saveDestinationImage(destinationImage);
-                return response.json({ok: true, message: "Image correctement uploadée" });
+                return response.json({ ok: true, message: "Image correctement uploadée" });
             } catch (error) {
                 return next({ error: error.message, status: 500 });
             }
@@ -336,17 +376,34 @@ export class DestinationController {
 
     }
 
-    static findFilteredDestinations = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-        const page = parseInt(request.query.page as string);
-        const limit = parseInt(request.query.limit as string);
 
-        const destinations: Destination[] = await this.destinationRepository.findFilteredDestinations(request.query.search.toString(), page, limit);
+    static allByCategory = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any>> => {
+        try {
+            const destinations = await this.destinationRepository.findDestinationsByCategoryId(request.params.id, parseInt(request.query.page as string), parseInt(request.query.limit as string));
+            for (const destination of destinations) {
+                const userIsAdmin = await AppDataSource
+                    .getRepository(User)
+                    .createQueryBuilder("user")
+                    .select("user.isAdmin")
+                    .where("user.id = :id", { id: destination.user.id })
+                    .getOne()
+                destination.user = userIsAdmin
+            }
 
-        if (!destinations) {
-            return next(new NotFoundException({ message: 'Aucune destination ne correspond à ces critères' }));
+            return response.json({
+                destinations,
+                pagination: {
+                    page: parseInt(request.query.page as string),
+                    limit: parseInt(request.query.limit as string),
+                    total: await this.destinationRepository.countDestinationsByCategoryId(request.params.id),
+                    totalPages: Math.ceil(await this.destinationRepository.countDestinationsByCategoryId(request.params.id) / parseInt(request.query.limit as string))
+                }
+            });
+        } catch (error) {
+            next(error);
         }
-
-        response.json(destinations);
+    
     }
+
 
 }

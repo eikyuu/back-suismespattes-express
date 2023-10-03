@@ -7,7 +7,9 @@ const router = Router();
 
 router.get("/", DestinationController.all);
 
-router.get("/s", DestinationController.findFilteredDestinations);
+router.get("/search", DestinationController.fetchAllNamesAndSlugs);
+
+router.get("/category/:id", DestinationController.allByCategory);
 
 router.get("/:slug", DestinationController.one);
 
