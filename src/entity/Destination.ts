@@ -1,7 +1,9 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { DestinationImage } from './DestinationImage'
 import { Category } from './Category'
 import { User } from './User'
+import { City } from './City'
+import slugify from 'slugify'
 
 @Entity()
 export class Destination {
@@ -17,9 +19,6 @@ export class Destination {
 
     @Column("text", { name: "description", nullable: false })
     description: string
-
-    @Column("varchar", { name: "city", length: 255, nullable: false })
-    city: string
 
     @Column("varchar", { name: "postal_code", length: 5, nullable: false })
     postalCode: string
@@ -64,6 +63,10 @@ export class Destination {
     @JoinColumn({ name: "category_id" })
     category: Category
 
+    @ManyToOne(() => City, city => city.destinations)
+    @JoinColumn({ name: "city_id" })
+    city: City
+
     //TODO : PASSER A FALSE UNE FOIS EN PROD
     @ManyToOne(() => User, { nullable: true })
     @JoinColumn({ name: "user", referencedColumnName: "email" })
@@ -71,5 +74,16 @@ export class Destination {
 
     @Column("boolean", { name: "is_favorite", default: false })
     isFavorite: boolean
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    generateSlug() {
+      this.slug = slugify(this.name, { 
+        lower: true,
+        strict: true,
+        remove: /[*+~.()'"!:@]/g,
+        trim: true
+     });
+    }
 }
 

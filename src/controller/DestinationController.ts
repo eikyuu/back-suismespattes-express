@@ -13,6 +13,7 @@ import { Destination } from '../entity/Destination';
 import { DestinationImage } from '../entity/DestinationImage';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
+import slugify from 'slugify';
 
 export class DestinationController {
     static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
@@ -85,20 +86,6 @@ export class DestinationController {
         }
     }
 
-    static findByName = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-        try {
-            const name: string = request.params.name;
-            const destination: Destination = await this.destinationRepository.findDestinationByName(name);
-
-            if (!destination) {
-                next(new NotFoundException({ message: 'Cette destination n\'existe pas' }));
-            }
-            response.json(destination);
-        } catch (error) {
-            next(error);
-        }
-    }
-
     static fetchAllNamesAndSlugs = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         const search = request.query.name;
         try {
@@ -148,7 +135,6 @@ export class DestinationController {
      * @return {Promise<Destination>} The saved destination object.
      */
     static save = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any> | void> => {
-        let formattedSlug = formatSlug(request.body.name.trim());
         let latitude: number;
         let longitude: number;
         try {
@@ -161,7 +147,6 @@ export class DestinationController {
 
         const destination = Object.assign(new Destination(), {
             ...request.body,
-            slug: formattedSlug,
             latitude: request.body.latitude ? request.body.latitude : latitude,
             longitude: request.body.longitude ? request.body.longitude : longitude,
         });
@@ -171,7 +156,7 @@ export class DestinationController {
                 return next(new BadRequestException('Requête invalide'));
             }
 
-            const destinationToCheck = await this.destinationRepository.findDestinationBySlug(destination.slug);
+            const destinationToCheck = await this.destinationRepository.findDestinationBySlug(slugify(destination.name));
             if (destinationToCheck) {
                 return next(new BadRequestException({ message: 'Cette destination existe déja' }));
             }
@@ -375,35 +360,5 @@ export class DestinationController {
         response.json({ message: 'Destination image supprimée' });
 
     }
-
-
-    static allByCategory = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any>> => {
-        try {
-            const destinations = await this.destinationRepository.findDestinationsByCategoryId(request.params.id, parseInt(request.query.page as string), parseInt(request.query.limit as string));
-            for (const destination of destinations) {
-                const userIsAdmin = await AppDataSource
-                    .getRepository(User)
-                    .createQueryBuilder("user")
-                    .select("user.isAdmin")
-                    .where("user.id = :id", { id: destination.user.id })
-                    .getOne()
-                destination.user = userIsAdmin
-            }
-
-            return response.json({
-                destinations,
-                pagination: {
-                    page: parseInt(request.query.page as string),
-                    limit: parseInt(request.query.limit as string),
-                    total: await this.destinationRepository.countDestinationsByCategoryId(request.params.id),
-                    totalPages: Math.ceil(await this.destinationRepository.countDestinationsByCategoryId(request.params.id) / parseInt(request.query.limit as string))
-                }
-            });
-        } catch (error) {
-            next(error);
-        }
-    
-    }
-
 
 }
