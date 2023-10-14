@@ -24,4 +24,21 @@ export default class CityController {
         }
     }
 
+    static fetchCityByCodePostal = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
+            
+            const codePostal = request.params.codePostal;
+    
+            if (!codePostal) {
+                return next(new BadRequestException('Données invalides'));
+            }
+    
+            try {
+                const city = await this.cityRepository.findCityByCodePostal(codePostal);
+    
+                response.status(200).json(city);
+            } catch (error) {
+                return next(new BadRequestException({ message: error.message }));
+            }
+    }
+
 } 

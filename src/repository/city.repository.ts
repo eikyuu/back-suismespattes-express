@@ -19,4 +19,13 @@ export const CityRepository = AppDataSource.getRepository(City).extend({
             }
         });
     },
+
+    async findCityByCodePostal(codePostal: string): Promise<City> {
+        return await this.find({
+            where: { postalCode: codePostal },
+            order: {
+                label: 'DESC'
+            }
+        });
+    }
 });

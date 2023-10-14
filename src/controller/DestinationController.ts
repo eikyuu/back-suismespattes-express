@@ -147,6 +147,7 @@ export class DestinationController {
 
         const destination = Object.assign(new Destination(), {
             ...request.body,
+            name: request.body.name.trim(),
             latitude: request.body.latitude ? request.body.latitude : latitude,
             longitude: request.body.longitude ? request.body.longitude : longitude,
         });

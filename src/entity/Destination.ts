@@ -20,9 +20,6 @@ export class Destination {
     @Column("text", { name: "description", nullable: false })
     description: string
 
-    @Column("varchar", { name: "postal_code", length: 5, nullable: false })
-    postalCode: string
-
     @Column("varchar", { name: "street", length: 255, nullable: false })
     street: string
 
