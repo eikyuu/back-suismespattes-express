@@ -126,6 +126,16 @@ export class DestinationController {
     }
 
 
+    static geocode = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        try {
+            const geocodeResult = await this.geocodeAddress(`${request.body.street} ${request.body.postalCode} ${request.body.city} ${request.body.country}`);
+            response.json({ lat: geocodeResult.lat, lng: geocodeResult.lng });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
     /**
      * Saves a destination based on the provided request data.
      *
@@ -135,21 +145,10 @@ export class DestinationController {
      * @return {Promise<Destination>} The saved destination object.
      */
     static save = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any> | void> => {
-        let latitude: number;
-        let longitude: number;
-        try {
-            const geocodeResult = await this.geocodeAddress(`${request.body.postalCode} ${request.body.city} ${request.body.country}`);
-            latitude = geocodeResult.lat;
-            longitude = geocodeResult.lng;
-        } catch (error) {
-            return next(new Error(error.message));
-        }
 
         const destination = Object.assign(new Destination(), {
             ...request.body,
             name: request.body.name.trim(),
-            latitude: request.body.latitude ? request.body.latitude : latitude,
-            longitude: request.body.longitude ? request.body.longitude : longitude,
         });
 
         try {

@@ -26,11 +26,11 @@ export class Destination {
     @Column("varchar", { name: "country", length: 255, nullable: false })
     country: string
 
-    @Column("float", { name: "latitude", nullable: true })
-    latitude: number
+    @Column("varchar", { name: "latitude", nullable: true })
+    latitude: string
 
-    @Column("float", { name: "longitude", nullable: true })
-    longitude: number
+    @Column("varchar", { name: "longitude", nullable: true })
+    longitude: string
 
     @Column("enum", { name: "obligatory_leash", enum: ["YES", "NO", "RECOMANDED"], default: "NO" })
     obligatoryLeash: ["YES", "NO", "RECOMANDED"]

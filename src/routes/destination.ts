@@ -9,7 +9,11 @@ router.get("/", DestinationController.all);
 
 router.get("/search", DestinationController.fetchAllNamesAndSlugs);
 
+router.post("/geocode", DestinationController.geocode);
+
 router.get("/:slug", DestinationController.one);
+
+
 
 router.post("/", [checkJwt, checkRole(["ROLE_USER"])], DestinationController.save);
 
