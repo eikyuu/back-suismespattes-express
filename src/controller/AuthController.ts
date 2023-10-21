@@ -78,7 +78,6 @@ export class AuthController {
            user.resetTokenExpiresAt = new Date(Date.now() + 86400);
 
            await this.userRepository.save(user);
-            console.log(user.email);
             await send({
                 "from": `Suismespattes <${process.env.EMAIL}>`,
                 "to": user.email,

@@ -7,7 +7,13 @@ const router = Router();
 
 router.get("/", DestinationController.all);
 
+router.get("/search", DestinationController.fetchAllNamesAndSlugs);
+
+router.post("/geocode", DestinationController.geocode);
+
 router.get("/:slug", DestinationController.one);
+
+
 
 router.post("/", [checkJwt, checkRole(["ROLE_USER"])], DestinationController.save);
 
@@ -20,5 +26,6 @@ router.post("/images", [checkJwt, checkRole(["ROLE_USER"])], DestinationControll
 router.get("/images/:filename", DestinationController.getImages);
 
 router.put("/images/:slug", [checkJwt, checkRole(["ROLE_ADMIN"])], DestinationController.removeDestinationImage);
+
 
 export default router;

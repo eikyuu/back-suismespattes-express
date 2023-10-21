@@ -8,6 +8,7 @@ import { User } from './entity/User'
 import { Destination } from './entity/Destination'
 import { DestinationImage } from './entity/DestinationImage'
 import { Category } from './entity/Category'
+import { City } from './entity/City'
 
 export const AppDataSource = new DataSource({
     type: "mysql",
@@ -23,7 +24,8 @@ export const AppDataSource = new DataSource({
         Review,
         DestinationImage,
         User,
-        Category        
+        Category,
+        City
     ],
     migrations: [],
     subscribers: [],
