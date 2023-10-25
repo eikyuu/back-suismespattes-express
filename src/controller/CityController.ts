@@ -7,7 +7,7 @@ export default class CityController {
     static cityRepository = CityRepository;
 
     static fetchAllCityBySearch = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
-
+        console.log('fetchAllCityBySearch');
         const search = request.query.q;
 
         if (!search) {
