@@ -109,11 +109,12 @@ export class DestinationController {
             const destination: Destination = await this.destinationRepository.findDestinationBySlug(slug);
 
             const userIsAdmin = await AppDataSource
-            .getRepository(User)
-            .createQueryBuilder("user")
-            .select("user.isAdmin")
-            .where("user.id = :id", { id: destination.user.id })
-            .getOne()
+                .getRepository(User)
+                .createQueryBuilder("user")
+                .select("user.isAdmin")
+                .addSelect("user.pseudo")
+                .where("user.id = :id", { id: destination.user.id })
+                .getOne()
             destination.user = userIsAdmin
 
             if (!destination) {
