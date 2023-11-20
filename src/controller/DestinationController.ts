@@ -136,11 +136,6 @@ export class DestinationController {
         }
     }
 
-
-
-
-
-
     /**
      * Saves a destination based on the provided request data.
      *
@@ -176,11 +171,6 @@ export class DestinationController {
         }
     }
 
-
-
-
-
-
     static update = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any> | void> => {
         const slug: string = request.params.slug;
         const destinationToUpdate: Destination = await this.destinationRepository.findDestinationBySlug(slug);
@@ -204,7 +194,6 @@ export class DestinationController {
             return next(new BadRequestException({ message: error.message }));
         }
     }
-
 
     /**
      * Removes a destination from the database and associated images.
