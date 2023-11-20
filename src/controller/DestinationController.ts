@@ -137,6 +137,10 @@ export class DestinationController {
     }
 
 
+
+
+
+
     /**
      * Saves a destination based on the provided request data.
      *
@@ -150,6 +154,9 @@ export class DestinationController {
         const destination = Object.assign(new Destination(), {
             ...request.body,
             name: request.body.name.trim(),
+            waterPoint: request.body.waterPoint === "YES",
+            processionaryCaterpillarAlert: request.body.processionaryCaterpillarAlert === "YES",
+            cyanobacteriaAlert : request.body.cyanobacteriaAlert === "YES",
         });
 
         try {
@@ -159,7 +166,7 @@ export class DestinationController {
 
             const destinationToCheck = await this.destinationRepository.findDestinationBySlug(slugify(destination.name));
             if (destinationToCheck) {
-                return next(new BadRequestException({ message: 'Cette destination existe déja' }));
+                return next(new BadRequestException({ message: 'Le nom de cette destination existe déja' }));
             }
 
             await this.destinationRepository.save(destination);
@@ -168,6 +175,11 @@ export class DestinationController {
             return next(new BadRequestException({ message: error.message }));
         }
     }
+
+
+
+
+
 
     static update = async (request: Request, response: Response, next: NextFunction): Promise<Record<string, any> | void> => {
         const slug: string = request.params.slug;
@@ -290,7 +302,7 @@ export class DestinationController {
             }
 
             const newFilename = path.join(DestinationController.UPLOAD_DIR + '/destination/' + filename + '.webp');
-            await sharp(request.file.path).rotate().resize(1140, 760).webp({ quality: 100 }).toFile(newFilename);
+            await sharp(request.file.path).rotate().webp({ quality: 100 }).toFile(newFilename);
             await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
 
             const destinationImage = new DestinationImage();
