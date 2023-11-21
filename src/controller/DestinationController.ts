@@ -183,8 +183,15 @@ export class DestinationController {
         try {
 
             const destination = Object.assign(destinationToUpdate, request.body, {
-                slug: newSlug
+                ...request.body,
+                slug: newSlug,
+                name: request.body.name.trim(),
+                waterPoint: request.body.waterPoint === "YES",
+                processionaryCaterpillarAlert: request.body.processionaryCaterpillarAlert === "YES",
+                cyanobacteriaAlert : request.body.cyanobacteriaAlert === "YES",
             });
+
+            
             await this.destinationRepository.save({
                 ...destination
             });
