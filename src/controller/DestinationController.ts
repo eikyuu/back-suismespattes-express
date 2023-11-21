@@ -295,15 +295,26 @@ export class DestinationController {
             if (request.file.mimetype !== 'image/jpeg' && request.file.mimetype !== 'image/png' && request.file.mimetype !== 'image/webp' && request.file.mimetype !== 'image/heic') {
                 await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
                 return next(new BadRequestException({ message: 'Fichier invalide' }));
-            }
+            }            
+
+            const image = sharp(request.file.path);
 
             const newFilename = path.join(DestinationController.UPLOAD_DIR + '/destination/' + filename + '.webp');
-            await sharp(request.file.path).rotate().webp({ quality: 100 }).toFile(newFilename);
+            const resizedImage = image.rotate().resize({
+                fit: sharp.fit.contain,
+                width: 1920
+            }).webp({ quality: 100 });
+            await resizedImage.toFile(newFilename);
+
+            const { info } = await resizedImage.webp().toBuffer({ resolveWithObject: true });
+            
             await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
 
             const destinationImage = new DestinationImage();
             destinationImage.name = filename + '.webp';
             destinationImage.destination = destination;
+            destinationImage.width = info.width;
+            destinationImage.height = info.height;
 
             try {
                 await DestinationImageRepository.saveDestinationImage(destinationImage);

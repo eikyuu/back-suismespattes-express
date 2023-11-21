@@ -17,5 +17,11 @@ export class DestinationImage {
      })
      @JoinColumn({ name : "destination_id"})
     destination: Destination
+
+    @Column("int", { name : "width", nullable: true } )
+    width: number
+
+    @Column("int", { name : "height", nullable: true } )
+    height: number
 }
 
