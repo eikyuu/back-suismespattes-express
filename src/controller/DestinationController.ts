@@ -113,6 +113,7 @@ export class DestinationController {
                 .createQueryBuilder("user")
                 .select("user.isAdmin")
                 .addSelect("user.pseudo")
+                .addSelect("user.email")
                 .where("user.id = :id", { id: destination.user.id })
                 .getOne()
             destination.user = userIsAdmin
