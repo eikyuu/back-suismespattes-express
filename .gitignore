@@ -10,4 +10,8 @@ data/destination/*jpg
 data/destination/*png 
 data/destination/*jpeg
 data/destination/*webp
+data/user/*jpg
+data/user/*png
+data/user/*jpeg
+data/user/*webp
 .env

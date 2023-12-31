@@ -123,6 +123,6 @@ export class User {
     @OneToMany(() => Destination, destination => destination.user)
     destinations: Destination
 
-
-    
+    @Column("varchar" , { name : "picture", length: 255, nullable: true, default: null })
+    picture: string;
 }

@@ -64,8 +64,7 @@ export class Destination {
     @JoinColumn({ name: "city_id" })
     city: City
 
-    //TODO : PASSER A FALSE UNE FOIS EN PROD
-    @ManyToOne(() => User, { nullable: true })
+    @ManyToOne(() => User, { nullable: true, onUpdate: "CASCADE" })
     @JoinColumn({ name: "user", referencedColumnName: "email" })
     user: User
 
@@ -82,5 +81,8 @@ export class Destination {
         trim: true
      });
     }
+
+    @Column("enum", { name: "status", enum: ["PENDING", "PUBLISHED", "REJECTED"], default: "PENDING" })
+    status: ["PENDING", "PUBLISHED", "REJECTED"]
 }
 

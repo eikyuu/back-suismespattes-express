@@ -5,7 +5,6 @@ import destination from "./destination";
 import category from './category';
 import city from './city';
 import search from './search';
-import { signUpLimiter } from '../middlewares/limiter';
 
 const routes = Router();
 
@@ -16,7 +15,7 @@ routes.use("/search", search);
 routes.use("/auth", auth);
 
 // USER
-routes.use("/user", signUpLimiter, user);
+routes.use("/user", user);
 
 // DESTINATION
 routes.use("/destination", destination);

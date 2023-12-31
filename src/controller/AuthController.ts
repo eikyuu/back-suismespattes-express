@@ -45,9 +45,10 @@ export class AuthController {
             response.json({ 
                 token,
                 user: {
+                    id: user.id,
                     pseudo: user.pseudo,
                     email: user.email,
-                    roles: user.roles
+                    roles: user.roles,
                 }
             });
 
