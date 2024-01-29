@@ -9,7 +9,7 @@ const router = Router();
 //Create a new user
 router.post("/", UserController.save);
 
-router.post("/upload-picture", [], UserController.uploadPicture);
+router.post("/:id/picture", [], UserController.uploadPicture);
 router.put("/:id", [], UserController.update);
 router.get("/:id", [], UserController.one);
 router.get("/:id/picture", [], UserController.getPicture);

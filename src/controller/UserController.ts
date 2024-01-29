@@ -89,7 +89,6 @@ export default class UserController {
 
     static update = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
 
-        const userId = Number(request.params.id);
         const UserToUpdate = await this.userRepository.findUserById(request.params.id);
         
         if (!UserToUpdate) {
@@ -144,7 +143,7 @@ export default class UserController {
 
         upload(request, response, async (error) => {
 
-            const user = await UserRepository.findOne({ where: { id: request.body.id } });
+            const user = await UserRepository.findUserById(request.params.id);
 
             const image = sharp(request.file.path);
 

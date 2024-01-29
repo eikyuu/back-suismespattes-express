@@ -13,8 +13,6 @@ router.post("/geocode", DestinationController.geocode);
 
 router.get("/:slug", DestinationController.one);
 
-
-
 router.post("/", [checkJwt, checkRole(["ROLE_USER"])], DestinationController.save);
 
 router.put("/:slug", [checkJwt, checkRole(["ROLE_ADMIN"])], DestinationController.update);
