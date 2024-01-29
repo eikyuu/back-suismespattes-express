@@ -127,7 +127,6 @@ export class DestinationController {
         }
     }
 
-
     static geocode = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         try {
             const geocodeResult = await this.geocodeAddress(`${request.body.street} ${request.body.postalCode} ${request.body.city} ${request.body.country}`);

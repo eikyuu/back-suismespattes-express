@@ -9,10 +9,12 @@ import { promisify } from 'util';
 import sharp = require('sharp');
 import path = require('path');
 import fs = require('fs');
+import { DestinationRepository } from '../repository/destination.repository';
 
 export default class UserController {
 
     static userRepository = UserRepository
+    static destinationRepository = DestinationRepository
     static UPLOAD_DIR: string = process.env.UPLOAD_PATH;
 
     static save = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
@@ -69,6 +71,16 @@ export default class UserController {
         return response.json(user);
     }
 
+    static fetchDestinationsByUser = async (request: Request, response: Response, next: NextFunction): Promise<void> => {
+        const userId = request.params.id;
+
+        try {
+            const destinations = await this.destinationRepository.findDestinationsByUserId(userId);
+            response.json(destinations);
+        } catch (error) {
+            next(error);
+        }
+    }
 
     static getPicture = async (request: Request, response: Response, next: NextFunction): Promise<any> => {
 

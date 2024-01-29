@@ -13,5 +13,6 @@ router.post("/:id/picture", [], UserController.uploadPicture);
 router.put("/:id", [], UserController.update);
 router.get("/:id", [], UserController.one);
 router.get("/:id/picture", [], UserController.getPicture);
+router.get("/:id/destinations", [], UserController.fetchDestinationsByUser);
 
 export default router;

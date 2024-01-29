@@ -120,6 +120,16 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
                 country :queries.country || undefined,
             },
         });
+    },
+
+    async findDestinationsByUserId(id: string): Promise<Destination[]> {
+        return await this.find({
+            where: { user: { id } },
+            relations: ['images', 'category', 'user', 'city'],
+            order: {
+                createdAt: 'DESC'
+            }
+        })
     }
 
 });
