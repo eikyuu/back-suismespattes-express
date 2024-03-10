@@ -15,15 +15,15 @@ routes.use("/search", search);
 routes.use("/auth", auth);
 
 // USER
-routes.use("/user", user);
+routes.use("/users", user);
 
 // DESTINATION
-routes.use("/destination", destination);
+routes.use("/destinations", destination);
 
 // CATEGORY
-routes.use("/category", category);
+routes.use("/categories", category);
 
 // CITY
-routes.use("/city", city)
+routes.use("/cities", city)
 
 export default routes;
