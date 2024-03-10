@@ -17,6 +17,13 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
         });
     },
 
+    async findAllPublishedDestinations(): Promise<Destination[]> {
+        return await this.find({
+            where: { status: 'PUBLISHED' },
+            relations: ['images', 'category', 'user', 'city']
+        });
+    },
+
     async findDestinationById(id: number): Promise<Destination> {
         return await this.findOne({
             where: { id },
@@ -38,7 +45,9 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
 
     async countDestinationsByCategoryId(id: string): Promise<number> {
         return await this.count({
-            where: { category: { id } },
+            where: { 
+                where: { status: 'PUBLISHED' },
+                category: { id } },
         });
     },
 
@@ -55,6 +64,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
     async findFilteredDestinations(search: string, page: number, limit: number): Promise<Destination[]> {
         return this.find({
             where: {
+                where: { status: 'PUBLISHED' },
                 name: Like(`%${search}%`)
             },
             relations: ['images', 'category', 'user', 'city'],
@@ -69,6 +79,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
     async findAllNameBySearch(search: string): Promise<Destination[]> {
         return this.find({
             where: {
+                where: { status: 'PUBLISHED' },
                 name: Like(`%${search}%`)
             },
             relations: ['images', 'category', 'user', 'city']
@@ -77,6 +88,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
 
     async findPaginatedDestinations(page: number, limit: number): Promise<Destination[]> {
         return this.find({
+            where: { status: 'PUBLISHED' },
             relations: ['images', 'category', 'user', 'city'],
             skip: (page - 1) * limit,
             take: limit,
@@ -89,6 +101,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
     async findDestinationsByMultipleQueries(queries: any, page: number, limit: number): Promise<Destination[]> {
         return this.find({
             where: {
+                where: { status: 'PUBLISHED' },
                 name: queries.name || undefined,
                 category: { name: queries.category || undefined },
                 city : {
@@ -110,6 +123,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
     async findDestinationsByMultipleQueriesCount(queries: any): Promise<number> {
         return this.count({
             where: {
+                where: { status: 'PUBLISHED' },
                 name: queries.name || undefined,
                 category: { name: queries.category || undefined },
                 city : {

@@ -59,7 +59,7 @@ export class DestinationController {
             if (request.query.page && request.query.limit) {
                 destinations = await this.destinationRepository.findPaginatedDestinations(parseInt(request.query.page as string), parseInt(request.query.limit as string));
             } else {
-                destinations = await this.destinationRepository.findAllDestinations();
+                destinations = await this.destinationRepository.findAllPublishedDestinations();
             }
 
             for (const destination of destinations) {
