@@ -15,9 +15,9 @@ router.get("/:slug", DestinationController.one);
 
 router.post("/", [checkJwt, checkRole(["ROLE_USER"])], DestinationController.save);
 
-router.put("/:slug", [checkJwt, checkRole(["ROLE_ADMIN"])], DestinationController.update);
+router.put("/:slug", [checkJwt, checkRole(["ROLE_ADMIN", "ROLE_USER"])], DestinationController.update);
 
-router.delete("/:slug",[checkJwt, checkRole(["ROLE_ADMIN"])], DestinationController.remove);
+router.delete("/:slug",[checkJwt, checkRole(["ROLE_ADMIN", "ROLE_USER"])], DestinationController.remove);
 
 router.post("/images", [checkJwt, checkRole(["ROLE_USER"])], DestinationController.uploadImage);
 
