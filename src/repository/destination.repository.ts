@@ -1,6 +1,7 @@
 import { Like } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { Destination } from '../entity/Destination';
+import { stat } from 'fs';
 
 export const DestinationRepository = AppDataSource.getRepository(Destination).extend({
 
@@ -101,7 +102,6 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
     async findDestinationsByMultipleQueries(queries: any, page: number, limit: number): Promise<Destination[]> {
         return this.find({
             where: {
-                where: { status: 'PUBLISHED' },
                 name: queries.name || undefined,
                 category: { name: queries.category || undefined },
                 city : {
@@ -110,6 +110,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
                     departmentName: queries.department || undefined,
                 },
                 country :queries.country || undefined,
+                status: 'PUBLISHED',
             },
             relations: ['images', 'category', 'user', 'city'],
             skip: (page - 1) * limit,
@@ -123,7 +124,6 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
     async findDestinationsByMultipleQueriesCount(queries: any): Promise<number> {
         return this.count({
             where: {
-                where: { status: 'PUBLISHED' },
                 name: queries.name || undefined,
                 category: { name: queries.category || undefined },
                 city : {
@@ -132,6 +132,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
                     departmentName: queries.department || undefined,
                 },
                 country :queries.country || undefined,
+                status: 'PUBLISHED',
             },
         });
     },
