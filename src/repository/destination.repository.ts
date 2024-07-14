@@ -1,7 +1,6 @@
 import { Like } from 'typeorm';
 import { AppDataSource } from '../data-source';
 import { Destination } from '../entity/Destination';
-import { stat } from 'fs';
 
 export const DestinationRepository = AppDataSource.getRepository(Destination).extend({
 
