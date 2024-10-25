@@ -18,12 +18,12 @@ routes.use("/auth", auth);
 routes.use("/users", user);
 
 // DESTINATION
-routes.use("/destinations", destination);
+routes.use("/destination", destination);
 
 // CATEGORY
-routes.use("/categories", category);
+routes.use("/category", category);
 
 // CITY
-routes.use("/cities", city)
+routes.use("/city", city)
 
 export default routes;
