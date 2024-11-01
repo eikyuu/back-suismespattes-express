@@ -102,7 +102,7 @@ export const DestinationRepository = AppDataSource.getRepository(Destination).ex
         return this.find({
             where: {
                 name: queries.name || undefined,
-                category: { name: queries.category || undefined },
+                category: { id: queries.category || undefined },
                 city : {
                     label: queries.city || undefined,
                     regionName: queries.region || undefined,
