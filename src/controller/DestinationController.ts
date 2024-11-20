@@ -14,6 +14,7 @@ import { DestinationImage } from '../entity/DestinationImage';
 import { AppDataSource } from '../data-source';
 import { User } from '../entity/User';
 import slugify from 'slugify';
+import { send } from "../email/nodemailer";
 
 export class DestinationController {
     static GEOCODING_URI: string = 'https://maps.googleapis.com/maps/api/geocode/json';
@@ -165,7 +166,22 @@ export class DestinationController {
             }
 
             await this.destinationRepository.save(destination);
+
+
+            //send email to admin
+
+            await send({
+                "from": `Suismespattes <${process.env.EMAIL}>`,
+                "to": `${process.env.EMAIL}`,
+                "subject": "ajout destination",
+                "text": `ajout destination`,
+                template: 'destination'
+              })
+
             response.json({ ok: true, destination });
+
+
+
         } catch (error) {
             return next(new BadRequestException({ message: error.message }));
         }
@@ -287,10 +303,10 @@ export class DestinationController {
                 return next(new BadRequestException({ message: 'Fichier invalide' }));
             }
 
-            if (request.file.size > 5 * 1024 * 1024) {
-                await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
-                return next(new BadRequestException({ message: 'Fichier trop volumineux' }));
-            }
+            // if (request.file.size > 5 * 1024 * 1024) {
+            //     await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)
+            //     return next(new BadRequestException({ message: 'Fichier trop volumineux' }));
+            // }
 
             if (request.file.mimetype !== 'image/jpeg' && request.file.mimetype !== 'image/png' && request.file.mimetype !== 'image/webp' && request.file.mimetype !== 'image/heic') {
                 await unlinkAsync(DestinationController.UPLOAD_DIR + '/destination/' + filename)

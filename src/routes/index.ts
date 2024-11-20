@@ -15,7 +15,7 @@ routes.use("/search", search);
 routes.use("/auth", auth);
 
 // USER
-routes.use("/users", user);
+routes.use("/user", user);
 
 // DESTINATION
 routes.use("/destination", destination);
